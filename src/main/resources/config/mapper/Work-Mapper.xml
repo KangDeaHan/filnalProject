@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.work.mapper.WorkMapper">
+	<resultMap type="WkApVO" id="workMap">
+		<result property="waNo" column="WA_NO" />
+		<result property="waAper" column="WA_APER" />
+		<result property="waRver" column="WA_RVER" />
+		<result property="waDate" column="WA_DATE" />
+		<result property="waApdate" column="WA_APDATE" />
+		<result property="waArsn" column="WA_ARSN" />
+		<result property="waStime" column="WA_STIME" />
+		<result property="waEtime" column="WA_ETIME" />
+		<result property="waAllday" column="WA_ALLDAY" />
+		<result property="waExtime" column="WA_EXTIME" />
+		<result property="waNightime" column="WA_NIGHTIME" />
+		<result property="hdtime" column="HDTIME" />
+		<result property="waType" column="WA_TYPE" />
+		<result property="ewApst" column="EW_APST" />
+		<result property="waTltime" column="WA_TLTIME" />
+		<result property="ewAdate" column="EW_ADATE" />
+		<result property="ewRejrsn" column="EW_REJRSN" />
+		<result property="waDel" column="WA_DEL" />
+		<result property="wkColor" column="WK_COLOR" />
+	</resultMap>
+	
+<select id="workSelect" resultType="WkApVO">
+	select * from WK_AP
+</select>
+
+<select id="OneSelect" parameterType="WkApVO" resultType="WkApVO">
+	SELECT w.*, e.emp_nm, e.emp_img
+	FROM wk_ap w
+	INNER JOIN emp e ON w.wa_aper = e.emp_no
+	WHERE w.wa_aper = #{waAper}
+</select>
+
+<insert id="workInsert" parameterType="WkApVO">
+    <selectKey keyProperty="waNo" resultType="int" order="BEFORE">
+        select wkap_seq.nextval from dual
+    </selectKey>
+    insert into wk_ap (
+        WA_NO,
+        WA_APER,
+        WA_RVER,
+        WA_DATE,
+        WA_APDATE,
+        WA_ARSN,
+        WA_STIME,
+        WA_ETIME,
+        WA_ALLDAY,
+        WA_EXTIME,
+        WA_NIGHTIME,
+        HDTIME,
+        WA_TYPE,
+        EW_APST,
+        WA_TLTIME,
+        EW_ADATE,
+        EW_REJRSN,
+        WA_DEL,
+        WK_COLOR,
+        DFT_NO
+    )
+    values (
+        #{waNo},
+        #{waAper},
+        #{waRver},
+        #{waDate},
+        sysdate,
+        #{waArsn},
+        #{waStime},
+        #{waEtime},
+        #{waAllday},
+		FN_GET_WA_EXTIME(#{waStime},#{waEtime}),
+        FN_GET_WA_NIGHTTIME(#{waStime},#{waEtime}),
+        FN_GET_HDTIME(#{waStime},#{waEtime}),
+        #{waType},
+        #{ewApst},
+        CASE
+            WHEN TO_CHAR(#{waStime}, 'HH24:MI') &lt;= '12:00' AND TO_CHAR(#{waEtime}, 'HH24:MI') &gt;= '13:00' THEN #{waTltime} + 1
+            ELSE #{waTltime}
+        END,
+        #{ewAdate},
+        #{ewRejrsn},
+        #{waDel},
+        COALESCE(#{wkColor}, '#009788'),
+        #{dftNo}
+    )
+</insert>
+
+<select id="selectdftNo" resultType="int">
+	SELECT NVL(MAX(DFT_NO),0) AS DFT_NO	FROM DOC_WRI
+</select>
+
+<update id="workUpdate" parameterType="WkApVO">
+	update wk_ap
+	set wa_type = #{waType},
+		wa_arsn = #{waArsn},
+		wa_stime = #{waStime},
+		wa_etime = #{waEtime},
+		wk_color = #{wkColor},
+		wa_allday = #{waAllday}
+	where wa_no = #{waNo}
+</update>
+
+<delete id="workDelete" parameterType="WkApVO">
+	delete from wk_ap
+	where wa_no = #{waNo}
+</delete>
+
+<select id="totalWork" resultType="Integer" parameterType="String">
+	SELECT
+	SUM(TRUNC((WA_ETIME - WA_STIME) * 24 * 60 / 60)) - COUNT(WA_APER) AS totalTime
+	FROM WK_AP
+	WHERE WA_APER = #{waAper}
+</select>
+
+<select id="workOneSelect" resultType="WkApVO">
+  <![CDATA[
+	SELECT e.*, w.*, ap.apb_pro
+	FROM EMP e
+	FULL OUTER JOIN WK_AP w ON e.EMP_NO = w.WA_APER
+	LEFT JOIN apbox ap ON w.dft_no = ap.dft_no
+  ]]>
+</select>
+
+<select id="getEmpSelect" resultType="WkApVO">
+	SELECT e.*, w.*, ap.apb_pro
+	FROM EMP e
+	INNER JOIN WK_AP w ON e.EMP_NO = w.WA_APER
+	LEFT JOIN apbox ap ON w.dft_no = ap.dft_no
+	WHERE w.WA_APER = #{waAper}
+</select>
+
+<select id="countEMP" resultType="WkApVO">
+	SELECT e.EMP_NM, e.EMP_NO, e.EMP_IMG, COUNT(w.WA_APER) AS WA_APER_COUNT, B.dnm
+	FROM EMP e
+	FULL OUTER JOIN WK_AP w ON e.EMP_NO = w.WA_APER
+	LEFT JOIN DEPT B ON e.DCODE = B.DCODE
+	GROUP BY e.EMP_NM, e.EMP_NO, e.EMP_IMG, B.dnm
+</select>
+	
+	<!-- 문서작성 INSERT -->
+	<insert id="docInsert" parameterType="DocWriVO">
+		INSERT INTO DOC_WRI(DFT_NO, EMP_NO, DOC_KIND)
+		VALUES(#{dftNo},#{empNo},'근무신청')
+	</insert>
+	
+	<!-- 결제선 INSERT -->
+	<insert id="apboxInsert" parameterType="ApboxVO">
+		INSERT INTO APBOX(EMP_NO, DFT_NO, REJ_RSN, ARB_ST, FIN_AUTH_ST, SERIAL_NUMBER, APB_PRO)
+		VALUES(#{empNo},#{dftNo},#{rejRsn},#{arbSt},#{finAuthSt}, '1', '진행중')
+	</insert>
+	
+	<!-- 근무 승인자 사번 SELECT -->
+	<select id="workAuthSelect" resultType="String">
+		SELECT emp_no
+		FROM author_alwnc
+		WHERE authrt_id = 'ROLE_WORK_AP'
+	</select>
+	
+	<!-- 근무 타입 불러오기 -->
+	<select id="workTypeList" resultType="WorkVO">
+		SELECT * 
+		FROM WORK
+		WHERE WK_YN = 'Y'
+		ORDER BY WK_NO
+	</select>
+
+</mapper>

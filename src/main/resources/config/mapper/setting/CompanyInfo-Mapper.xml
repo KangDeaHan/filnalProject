@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.setting.mapper.CompanyInfoMapper">
+
+<resultMap type="CompanyInfoVO" id="companyInfoMap">
+	<result property="coNo" column="CO_NO" />
+	<result property="coNm" column="CO_NM" />
+	<result property="coRep" column="CO_REP" />
+	<result property="coTelno" column="CO_TELNO" />
+	<result property="coEstdDate" column="CO_ESTD_DATE" />
+	<result property="coAddr" column="CO_ADDR" />
+	<result property="coAddr2" column="CO_ADDR2" />
+	<result property="coNmpr" column="CO_NMPR" />
+	<result property="coInt" column="CO_INT" />
+	<result property="coRegno" column="CO_REGNO" />
+	<result property="corRegno" column="COR_REGNO" />
+	<result property="coTax" column="CO_TAX" />
+	<result property="fileNo" column="FILE_NO" />
+</resultMap>
+
+<select id="selectData" resultType="CompanyInfoVO">
+    SELECT
+    	CO_NM
+    	, CO_REP
+    	, CO_TELNO
+    	, TO_CHAR(CO_ESTD_DATE, 'YYYY-MM-DD') AS CO_ESTD_DATE
+    	, CO_ADDR
+    	, CO_ADDR2
+    	, CO_REGNO
+    	, COR_REGNO
+    FROM COMPANY_INFO
+    WHERE CO_NO = '1'
+</select>
+
+<update id="updateData" parameterType="CompanyInfoVO">
+	UPDATE COMPANY_INFO
+	SET 
+	  CO_NM = #{coNm}
+	, CO_REP = #{coRep}
+	, CO_TELNO = #{coTelno}
+	, CO_ESTD_DATE = #{coEstdDate}
+	, CO_ADDR = #{coAddr}
+	, CO_ADDR2 = #{coAddr2}
+	, CO_REGNO = #{coRegno}
+	, COR_REGNO = #{corRegno}
+	, FILE_NO = #{fileNo}
+	WHERE CO_NO = '1'
+</update>
+
+<!-- 파일 정보 INSERT -->
+<insert id="fileInsert" parameterType="FileInfoVO">
+	<selectKey resultType="int" order="BEFORE" keyProperty="fileSn">
+		SELECT NVL(MAX(FILE_SN),0) + 1 FROM FILE_INFO WHERE FILE_UDTER = #{fileUdter}
+	</selectKey>
+	INSERT INTO FILE_INFO(
+	    FILE_SN, ORFI_NAME, SVFI_NAME, FILE_SIZE,  
+	    SV_DATE, FILE_UDTER, FILE_ROOT, FILE_SETTING 
+	)VALUES(
+		#{fileSn},#{orfiName},#{svfiName},#{fileSize},sysdate,#{fileUdter},#{fileRoot},#{fileSetting}
+	)
+</insert>
+
+<!-- 파일 정보 SELECT -->
+<select id="logoFileSelect" parameterType="String" resultType="FileInfoVO">
+	SELECT FILE_SN, ORFI_NAME, SVFI_NAME, FILE_SIZE, 
+       SV_DATE, FILE_UDTER, FILE_ROOT, FILE_SETTING 
+	FROM FILE_INFO 
+	WHERE FILE_UDTER = #{fileUdter} AND FILE_SETTING = 'logo'
+	ORDER BY FILE_SN DESC
+</select>
+
+<!-- 직인 파일 SELECT -->
+<select id="sealFileSelect" parameterType="String" resultType="FileInfoVO">
+	SELECT FILE_SN, ORFI_NAME, SVFI_NAME, FILE_SIZE, 
+       SV_DATE, FILE_UDTER, FILE_ROOT, FILE_SETTING 
+	FROM FILE_INFO 
+	WHERE FILE_UDTER = #{fileUdter} AND FILE_SETTING = 'seal'
+	ORDER BY FILE_SN DESC
+</select>
+
+
+<!-- <update id="updateFile" parameterType="CompanyInfoVO"> -->
+<!-- 	UPDATE COMPANY_INFO  -->
+<!-- 	SET  -->
+<!-- 		FILE_NO = #{fileNo} -->
+<!-- 	WHERE CO_NO = '1' -->
+<!-- </update> -->
+
+<select id="getLogo" resultType="String">
+	SELECT 
+		SVFI_NAME
+	FROM FILE_INFO
+	WHERE FILE_SETTING = 'logo' AND FILE_SN = (SELECT MAX(FILE_SN) FROM FILE_INFO WHERE FILE_SETTING = 'logo')
+</select>
+
+
+</mapper>

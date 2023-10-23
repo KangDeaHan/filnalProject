@@ -1,0 +1,32 @@
+{
+	"labels": ["Jan16", "Feb2", "Mar3", "Apr4", "May", "Jun", "Jul", "Aug", "Sep"],
+    "datasets": [{
+        "label": "Visitors",
+        "barThickness": 10,
+        "backgroundColor":"base.primaryColor",
+        "borderColor": "base.primaryColor",
+        "pointRadius": "!1",
+        "pointColor": "#3b8bba",
+        "pointStrokeColor": "rgba(60,141,188,1)",
+        "pointHighlightFill": "#fff",
+        "pointHighlightStroke": "rgba(60,141,188,1)",
+        "data": [28, 48, 40, 19, 64, 27, 90, 85, 92],
+        "fill": "",
+        "lineTension":".1"
+    }, 
+    {
+        "label": "Orders",
+        "barThickness": 10,
+        "backgroundColor": "rgba(210, 214, 222, 1)",
+        "borderColor": "rgba(210, 214, 222, 1)",
+        "pointRadius": "!1",
+        "pointColor": "rgba(210, 214, 222, 1)",
+        "pointStrokeColor": "#c1c7d1",
+        "pointHighlightFill": "#fff",
+        "pointHighlightStroke": "rgba(220,220,220,1)",
+        "data": [65, 59, 80, 42, 43, 55, 40, 36, 68],
+        "fill": "",
+        "borderWidth": 2,
+        "lineTension": ".1"
+    }]
+}

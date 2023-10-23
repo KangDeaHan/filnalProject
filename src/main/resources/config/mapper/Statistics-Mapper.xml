@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.statistics.mapper.StatisticsMapper">
+
+<!-- 분기별 시작!!!!!!!!!!!!! -->
+
+	
+<select id="mFcount" parameterType="java.util.List" resultType="Integer">
+    SELECT COUNT(*) FROM EMP
+    WHERE GEN_CODE IN
+    <foreach item="item" collection="list" open="(" separator="," close=")">
+        FN_GET_CM_CODE(#{item})
+    </foreach>
+    GROUP BY GEN_CODE
+    ORDER BY GEN_CODE ASC
+</select>
+
+
+<select id="tltime" parameterType="String" resultType="EmpStatsVO">
+SELECT 
+  t.quarter, 
+  t.ptnCode, 
+  AVG(t.wh_tltime) AS avrgWorkHr,
+  (avg(to_char(wh_stime, 'HH24')*60*60 + to_char(wh_stime, 'MI')*60) /60 /60 ) AS avgrStime,
+  (avg(to_char(wh_etime, 'HH24')*60*60 + to_char(wh_etime, 'MI')*60) /60 /60 ) AS avgrEtime
+FROM 
+(
+    SELECT 
+        CASE 
+            WHEN EXTRACT(MONTH FROM wa_date) BETWEEN 1 AND 3 THEN '1'
+            WHEN EXTRACT(MONTH FROM wa_date) BETWEEN 4 AND 6 THEN '2'
+            WHEN EXTRACT(MONTH FROM wa_date) BETWEEN 7 AND 9 THEN '3'
+            WHEN EXTRACT(MONTH FROM wa_date) BETWEEN 10 AND 12 THEN '4'
+        END AS quarter,
+        FN_GET_CM_NM(b.ptn_code) AS ptnCode,
+        a.wh_tltime,
+        a.wh_stime,
+        a.wh_etime
+    FROM wk_hr a
+    INNER JOIN emp b ON a.emp_no = b.emp_no
+    WHERE EXTRACT(YEAR FROM wa_date) = EXTRACT(YEAR FROM sysdate)
+    AND b.ptn_code = #{ptnCode}
+) t
+GROUP BY t.quarter, t.ptnCode
+</select>
+
+<select id="setime" parameterType="String" resultType="EmpStatsVO">
+<![CDATA[
+SELECT
+  t.dateday,
+  (avg(to_char(wh_stime, 'HH24')*60*60 + to_char(wh_stime, 'MI')*60) /60 /60 ) AS avrgAttendTime,
+  (avg(to_char(wh_etime, 'HH24')*60*60 + to_char(wh_etime, 'MI')*60) /60 /60 ) AS avrgLvffcTime
+FROM (
+  SELECT
+    CASE
+      WHEN to_char(wa_date, 'D') = '1' THEN '일요일'
+      WHEN to_char(wa_date, 'D') = '2' THEN '월요일'
+      WHEN to_char(wa_date, 'D') = '3' THEN '화요일'
+      WHEN to_char(wa_date, 'D') = '4' THEN '수요일'
+      WHEN to_char(wa_date, 'D') = '5' THEN '목요일'
+      WHEN to_char(wa_date, 'D') = '6' THEN '금요일'
+      WHEN to_char(wa_date, 'D') = '7' THEN '토요일'
+    END AS dateday,
+    wh_stime,
+    wh_etime
+  FROM wk_hr
+  WHERE EXTRACT(YEAR FROM wa_date) = EXTRACT(YEAR FROM sysdate)
+  and   CASE
+    WHEN EXTRACT(MONTH FROM wa_date) BETWEEN 1 AND 3 THEN 1 
+    WHEN EXTRACT(MONTH FROM wa_date) BETWEEN 4 AND 6 THEN 2 
+    WHEN EXTRACT(MONTH FROM wa_date) BETWEEN 7 AND 9 THEN 3 
+    WHEN EXTRACT(MONTH FROM wa_date) BETWEEN 10 AND 12 THEN 4 
+  END = #{quarter}
+) t
+GROUP BY t.dateday
+ORDER BY 
+  CASE t.dateday
+    WHEN '월요일' THEN 1
+    WHEN '화요일' THEN 2
+    WHEN '수요일' THEN 3
+    WHEN '목요일' THEN 4
+    WHEN '금요일' THEN 5
+    WHEN '토요일' THEN 6
+    WHEN '일요일' THEN 7
+  END
+]]>
+</select>
+
+
+<select id="salary" parameterType="String" resultType="EmpStatsVO">
+SELECT ptn_code, AVG(emp_salary * 12 / 10000) AS yearSalary
+FROM (
+    SELECT 
+        NULLIF(
+            CASE
+                WHEN ptn_code = 'A0101' THEN '사원'
+                WHEN ptn_code = 'A0102' THEN '주임'
+                WHEN ptn_code = 'A0103' THEN '대리'
+                WHEN ptn_code = 'A0104' THEN '과장'
+                WHEN ptn_code = 'A0105' THEN '차장'
+                WHEN ptn_code = 'A0106' THEN '부장'
+            END,
+            'null'
+        ) AS ptn_code,
+        emp_salary
+    FROM emp
+) t
+WHERE ptn_code IS NOT NULL 
+GROUP BY ptn_code
+ORDER BY FN_GET_CM_CODE(ptn_code)
+</select>
+<!-- 입사자 -->
+<select id="incount" resultType="EmpStatsVO">
+SELECT
+    quarter,
+    COUNT(*) AS count
+FROM (
+    SELECT
+        CASE
+            WHEN EXTRACT(MONTH FROM e.ent_date) BETWEEN 1 AND 3 THEN '1'
+            WHEN EXTRACT(MONTH FROM e.ent_date) BETWEEN 4 AND 6 THEN '2'
+            WHEN EXTRACT(MONTH FROM e.ent_date) BETWEEN 7 AND 9 THEN '3'
+            WHEN EXTRACT(MONTH FROM e.ent_date) BETWEEN 10 AND 12 THEN '4'
+        END AS quarter
+    FROM
+        emp e
+) subquery
+WHERE quarter IS NOT NULL
+GROUP BY quarter
+ORDER by quarter
+</select>
+
+<!-- 퇴사자 -->
+<select id="outcount" resultType="EmpStatsVO">
+SELECT
+    quarter,
+    COUNT(*) AS count
+FROM (
+    SELECT
+        CASE
+            WHEN EXTRACT(MONTH FROM e.out_date) BETWEEN 1 AND 3 THEN '1'
+            WHEN EXTRACT(MONTH FROM e.out_date) BETWEEN 4 AND 6 THEN '2'
+            WHEN EXTRACT(MONTH FROM e.out_date) BETWEEN 7 AND 9 THEN '3'
+            WHEN EXTRACT(MONTH FROM e.out_date) BETWEEN 10 AND 12 THEN '4'
+        END AS quarter
+    FROM
+        emp e
+) subquery
+WHERE   quarter IS NOT NULL
+GROUP BY quarter
+ORDER by quarter
+</select>
+
+<!-- 채용관리 토탈 -->
+<select id="employment" resultType="EmpmnStatsVO">
+SELECT
+    quarter,    empmnEcnyp ,    empmnRetp,    empmnApplp,    empmnHanslNew,    empmnHanslOld,
+    empmnLacdH,    empmnLacdU,    empmnLacdG,    empmnLacdD, 
+    empmnApplpNew, empmnApplpOld, empmnApplM, empmnApplF
+FROM (
+    SELECT
+        CASE
+            WHEN EXTRACT(MONTH FROM e.empmn_date) BETWEEN 1 AND 3 THEN '1'
+            WHEN EXTRACT(MONTH FROM e.empmn_date) BETWEEN 4 AND 6 THEN '2'
+            WHEN EXTRACT(MONTH FROM e.empmn_date) BETWEEN 7 AND 9 THEN '3'
+            WHEN EXTRACT(MONTH FROM e.empmn_date) BETWEEN 10 AND 12 THEN '4'
+        END AS quarter,
+        e.empmn_ecnyp as  empmnEcnyp,        e.empmn_retp as   empmnRetp,        e.empmn_applp as  empmnApplp,        e.empmn_hansl_New as  empmnHanslNew, e.empmn_hansl_Old as  empmnHanslOld,
+        e.empmn_lacd_h as empmnLacdH,        e.empmn_lacd_u as empmnLacdU,        e.empmn_lacd_g as empmnLacdG,        e.empmn_lacd_d as empmnLacdD,
+        e.EMPMN_APPLP_NEW as empmnApplpNew, e.EMPMN_APPLP_OLD as empmnApplpOld, e.EMPMN_APPLP_M as empmnApplM, e.EMPMN_APPLP_F as empmnApplF
+    FROM
+        empmn_stats e
+    WHERE EXTRACT(YEAR FROM e.empmn_date) = EXTRACT(YEAR FROM SYSDATE)
+) t
+WHERE   quarter IS NOT NULL
+</select>
+
+
+<!-- 부서 가져오기 -->
+<select id="dept" resultType="DeptVO">
+select dcode, dnm from dept where dcode like '_'
+</select>
+
+<!-- 부서별 평균연봉 -->
+
+<select id="deptavgHansl" resultType="EmpStatsVO">
+SELECT
+    EXTRACT(YEAR FROM EMP_STATS_DATE) AS YEAR,
+    avg(DEPT_HANSL_1) AS DEPT_HANSL_1,
+    avg(DEPT_HANSL_2) AS DEPT_HANSL_2,
+    avg(DEPT_HANSL_3) AS DEPT_HANSL_3,
+    avg(DEPT_HANSL_4) AS DEPT_HANSL_4
+FROM EMP_STATS
+GROUP BY EXTRACT(YEAR FROM EMP_STATS_DATE)
+ORDER BY EXTRACT(YEAR FROM EMP_STATS_DATE)
+</select>
+
+<!-- 비품비용 -->
+<select id="cost" resultType="CostStatsVO">
+SELECT
+    quarter,    costNo ,    costDate,    costBsrp,    costFe, costPe,    CostFxte
+FROM (
+    SELECT
+        CASE
+            WHEN EXTRACT(MONTH FROM e.cost_date) BETWEEN 1 AND 3 THEN '1'
+            WHEN EXTRACT(MONTH FROM e.cost_date) BETWEEN 4 AND 6 THEN '2'
+            WHEN EXTRACT(MONTH FROM e.cost_date) BETWEEN 7 AND 9 THEN '3'
+            WHEN EXTRACT(MONTH FROM e.cost_date) BETWEEN 10 AND 12 THEN '4'
+        END AS quarter,
+      COST_NO as costNo, COST_DATE as costDate, COST_BSRP as costBsrp, COST_FE as costFe, COST_PE as costPe, COST_FXTE as CostFxte
+    FROM
+        cost_stats e
+    WHERE EXTRACT(YEAR FROM e.cost_date) = EXTRACT(YEAR FROM SYSDATE)
+) t
+WHERE   quarter IS NOT NULL
+</select>
+
+
+
+<!-- 분기별 끝!!!!!!!!!!!!! -->
+
+
+<!-- 연도별 시작 !!!!!!!!!!!!!!!!!!!!! -->
+
+<!-- 연별 직원 남여 인원수 -->
+<select id="yearMF" resultType="EmpStatsVO">
+SELECT 
+    CASE
+        WHEN EXTRACT(YEAR FROM e.EMP_STATS_DATE) = 2020 THEN '2020'
+        WHEN EXTRACT(YEAR FROM e.EMP_STATS_DATE) = 2021 THEN '2021'
+        WHEN EXTRACT(YEAR FROM e.EMP_STATS_DATE) = 2022 THEN '2022'
+        WHEN EXTRACT(YEAR FROM e.EMP_STATS_DATE) = 2023 THEN '2023'
+    END AS year,
+    AVG(e.EMP_PER) AS empPer,
+    AVG(e.EMP_MPER) AS empMPER,
+    AVG(e.EMP_FPER) AS empFPER
+FROM emp_stats e
+GROUP BY EXTRACT(YEAR FROM e.EMP_STATS_DATE)
+HAVING CASE
+    WHEN EXTRACT(YEAR FROM e.EMP_STATS_DATE) = 2020 THEN '2020'
+    WHEN EXTRACT(YEAR FROM e.EMP_STATS_DATE) = 2021 THEN '2021'
+    WHEN EXTRACT(YEAR FROM e.EMP_STATS_DATE) = 2022 THEN '2022'
+    WHEN EXTRACT(YEAR FROM e.EMP_STATS_DATE) = 2023 THEN '2023'
+END IS NOT NULL
+ORDER BY year
+
+</select>
+
+
+
+<select id="yeartltime" parameterType="String" resultType="EmpStatsVO">
+SELECT 
+  t.year, 
+  t.ptnCode, 
+  AVG(t.wh_tltime) AS avrgWorkHr,
+  (avg(to_char(wh_stime, 'HH24')*60*60 + to_char(wh_stime, 'MI')*60) /60 /60 ) AS avgrStime,
+  (avg(to_char(wh_etime, 'HH24')*60*60 + to_char(wh_etime, 'MI')*60) /60 /60 ) AS avgrEtime
+FROM 
+(
+    SELECT 
+        CASE 
+            WHEN EXTRACT(year FROM wa_date) = 2020 THEN '2020'
+            WHEN EXTRACT(year FROM wa_date) = 2021 THEN '2021'
+            WHEN EXTRACT(year FROM wa_date) = 2022 THEN '2022'
+            WHEN EXTRACT(year FROM wa_date) = 2023 THEN '2023'
+        END AS year,
+        FN_GET_CM_NM(b.ptn_code) AS ptnCode,
+        a.wh_tltime,
+        a.wh_stime,
+        a.wh_etime
+    FROM wk_hr a
+    INNER JOIN emp b ON a.emp_no = b.emp_no
+    AND b.ptn_code = #{ptnCode}
+) t
+GROUP BY t.year, t.ptnCode
+HAVING t.year IS NOT NULL
+
+</select>
+
+
+
+<select id="yearsetime" parameterType="String" resultType="EmpStatsVO">
+<![CDATA[
+SELECT
+  t.dateday,
+  (avg(to_char(wh_stime, 'HH24')*60*60 + to_char(wh_stime, 'MI')*60) /60 /60 ) AS avrgAttendTime,
+  (avg(to_char(wh_etime, 'HH24')*60*60 + to_char(wh_etime, 'MI')*60) /60 /60 ) AS avrgLvffcTime
+FROM (
+  SELECT
+    CASE
+      WHEN to_char(wa_date, 'D') = '1' THEN '일요일'
+      WHEN to_char(wa_date, 'D') = '2' THEN '월요일'
+      WHEN to_char(wa_date, 'D') = '3' THEN '화요일'
+      WHEN to_char(wa_date, 'D') = '4' THEN '수요일'
+      WHEN to_char(wa_date, 'D') = '5' THEN '목요일'
+      WHEN to_char(wa_date, 'D') = '6' THEN '금요일'
+      WHEN to_char(wa_date, 'D') = '7' THEN '토요일'
+    END AS dateday,
+    wh_stime,
+    wh_etime
+  FROM wk_hr
+  WHERE EXTRACT(YEAR FROM wa_date) = #{year}
+) t
+GROUP BY t.dateday
+ORDER BY 
+  CASE t.dateday
+    WHEN '월요일' THEN 1
+    WHEN '화요일' THEN 2
+    WHEN '수요일' THEN 3
+    WHEN '목요일' THEN 4
+    WHEN '금요일' THEN 5
+    WHEN '토요일' THEN 6
+    WHEN '일요일' THEN 7
+  END
+]]>
+</select>
+
+
+<select id="yearcost" parameterType="String" resultType="CostStatsVO">
+SELECT
+    year, costNo, costDate, costBsrp, costFe, costPe, CostFxte
+FROM (
+    SELECT
+        CASE
+            WHEN EXTRACT(year FROM cost_date) = 2020 THEN '2020'
+            WHEN EXTRACT(year FROM cost_date) = 2021 THEN '2021'
+            WHEN EXTRACT(year FROM cost_date) = 2022 THEN '2022'
+            WHEN EXTRACT(year FROM cost_date) = 2023 THEN '2023'
+        END AS year,
+        COST_NO as costNo, COST_DATE as costDate, COST_BSRP as costBsrp, COST_FE as costFe, COST_PE as costPe, COST_FXTE as CostFxte
+    FROM
+        cost_stats e
+    WHERE EXTRACT(YEAR FROM e.cost_date) = #{year}
+) t
+</select>
+
+
+<select id="yearemployment" parameterType="String" resultType="EmpmnStatsVO">
+SELECT
+    year,
+    SUM(empmnEcnyp) as empmnEcnyp,
+    SUM(empmnRetp) as empmnRetp,
+    SUM(empmnApplp) as empmnApplp,
+    avg(empmnHanslNew) as empmnHanslNew,
+    avg(empmnHanslOld) as empmnHanslOld,
+    SUM(empmnLacdH) as empmnLacdH,
+    SUM(empmnLacdU) as empmnLacdU,
+    SUM(empmnLacdG) as empmnLacdG,
+    SUM(empmnLacdD) as empmnLacdD,
+    SUM(empmnApplpNew) as empmnApplpNew,
+    SUM(empmnApplpOld) as empmnApplpOld,
+    SUM(empmnApplM) as empmnApplM,
+    SUM(empmnApplF) as empmnApplF
+FROM (
+    SELECT
+        CASE
+            WHEN EXTRACT(YEAR FROM e.empmn_date) = 2020 THEN '2020'
+            WHEN EXTRACT(YEAR FROM e.empmn_date) = 2021 THEN '2021'
+            WHEN EXTRACT(YEAR FROM e.empmn_date) = 2022 THEN '2022'
+            WHEN EXTRACT(YEAR FROM e.empmn_date) = 2023 THEN '2023'
+        END AS year,
+        e.empmn_ecnyp as empmnEcnyp,
+        e.empmn_retp as empmnRetp,
+        e.empmn_applp as empmnApplp,
+        e.empmn_hansl_New as empmnHanslNew,
+        e.empmn_hansl_Old as empmnHanslOld,
+        e.empmn_lacd_h as empmnLacdH,
+        e.empmn_lacd_u as empmnLacdU,
+        e.empmn_lacd_g as empmnLacdG,
+        e.empmn_lacd_d as empmnLacdD,
+        e.EMPMN_APPLP_NEW as empmnApplpNew,
+        e.EMPMN_APPLP_OLD as empmnApplpOld,
+        e.EMPMN_APPLP_M as empmnApplM,
+        e.EMPMN_APPLP_F as empmnApplF
+    FROM
+        empmn_stats e
+) t
+WHERE year IS NOT NULL
+GROUP BY year
+order by year	
+
+</select>
+
+
+<!-- 연도별 끝 !!!!!!!!!!!!!!!!!!!!! -->
+
+</mapper>

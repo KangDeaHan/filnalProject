@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.salary.mapper.PayDedMapper">
+	
+	<!-- 지급항목 법정필수항목 전체 리스트 출력 -->
+	<select id="selectLawPayList" resultType="PayDedVO">
+		SELECT PD_NO, PD_NM, PD_AMT, PD_EPN, PD_FML, PD_LAW_YN, PD_TAX_YN, PD_TYPE 
+		FROM PAY_DED
+		WHERE PD_LAW_YN = 'B0101' AND PD_TYPE = 'B0401'
+		ORDER BY PD_NO
+		  									
+	</select>
+	
+	<!-- 지급항목 추가한 항목 전체 리스트 출력 -->
+	<select id="selectAddedPayList" resultType="PayDedVO">
+		SELECT PD_NO, PD_NM, PD_AMT, PD_EPN, PD_FML, PD_LAW_YN, PD_TAX_YN, PD_TYPE 
+		FROM PAY_DED
+		WHERE PD_LAW_YN = 'B0102' AND PD_TYPE = 'B0401'
+		ORDER BY PD_NO
+	</select>
+	
+	<!-- 공제항목 법정필수항목 전체 리스트 출력 -->
+	<select id="selectLawDedList" resultType="PayDedVO">
+		SELECT PD_NO, PD_NM, PD_AMT, PD_EPN, PD_FML, PD_LAW_YN, PD_TAX_YN, PD_TYPE 
+		FROM PAY_DED
+		WHERE PD_LAW_YN = 'B0101' AND PD_TYPE = 'B0402'
+		ORDER BY PD_NO
+		  									
+	</select>
+	
+	<!-- 공제항목 추가한 항목 전체 리스트 출력 -->
+	<select id="selectAddedDedList" resultType="PayDedVO">
+		SELECT PD_NO, PD_NM, PD_AMT, PD_EPN, PD_FML, PD_LAW_YN, PD_TAX_YN, PD_TYPE 
+		FROM PAY_DED
+		WHERE PD_LAW_YN = 'B0102' AND PD_TYPE = 'B0402'
+		ORDER BY PD_NO
+	</select>
+	
+	<!-- 지급/공제항목 항목당 한건 검색 -->
+	<select id="selectPD" parameterType="int" resultType="PayDedVO">
+		SELECT PD_NO, PD_NM, PD_AMT, PD_EPN, PD_FML, PD_LAW_YN, PD_TAX_YN, PD_TYPE 
+		FROM PAY_DED
+		WHERE PD_NO = #{pdNo}
+	</select>
+	
+	<!-- 급여템플릿구성테이블에서 지급/공제항목 있는지 확인  (count)  -->
+	<select id="selectPTMCount" parameterType="PayDedVO" resultType="int">
+		SELECT count(PD_NO) 
+		FROM PT_MAKE
+		WHERE PT_NO=#{ptNo} AND PD_NO=#{pdNo}
+	</select>
+	
+	<!-- 급여템플릿구성테이블에서 지급/공제항목 있는지 확인  -->
+	<select id="selectPTMList" parameterType="int" resultType="PayDedVO">
+		SELECT PTM_NO, PT_NO, PD_NO
+		FROM PT_MAKE
+		WHERE PT_NO=#{ptNo}
+	</select>
+	
+	<!-- 지급/공제항목 추가 -->
+	<insert id="insertPD" parameterType="PayDedVO">
+		<selectKey resultType="int" order="BEFORE" keyProperty="pdNo">
+			SELECT NVL(MAX(PD_NO),0) + 1 FROM PAY_DED
+		</selectKey>
+		INSERT INTO PAY_DED(PD_NO, PD_NM, PD_AMT, PD_EPN, PD_FML, PD_TAX_YN, PD_TYPE)
+		VALUES (#{pdNo}, #{pdNm}, #{pdAmt}, #{pdEpn}, #{pdFml}, #{pdTaxYn}, #{pdType}) 
+	</insert>
+	
+	<!-- 지급/공제항목 변경 -->
+	<update id="updatePD" parameterType="PayDedVO">
+		UPDATE PAY_DED 
+		SET PD_NM=#{pdNm}, PD_AMT=#{pdAmt}, PD_EPN=#{pdEpn}, PD_FML=#{pdFml}, PD_TAX_YN=#{pdTaxYn} 
+		WHERE PD_NO=#{pdNo}
+	</update>
+	
+	<!-- 지급/공제항목 삭제 -->
+	<delete id="deletePD" parameterType="PayDedVO">
+		DELETE FROM PAY_DED
+		WHERE PD_NO=#{pdNo}
+	</delete>
+	
+	<!-- 템플릿구성 추가 -->
+ 	<insert id="insertPTM" parameterType="PayDedVO" >  
+		<selectKey resultType="int" order="BEFORE" keyProperty="ptmNo">
+			SELECT NVL(MAX(PTM_NO),0) + 1 FROM PT_MAKE
+		</selectKey>
+		INSERT INTO PT_MAKE(PTM_NO, PT_NO, PD_NO)
+		VALUES(#{ptmNo}, #{ptNo}, #{pdNo})
+	</insert>  
+	
+	<!-- 템플릿구성 삭제 -->
+ 	<delete id="deletePTM" parameterType="PayDedVO">  
+		DELETE FROM PT_MAKE
+		WHERE PD_NO=#{pdNo} AND PT_NO=#{ptNo}
+	</delete>   
+
+
+
+</mapper>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.setting.mapper.CompHoliMapper">
+
+<resultMap type="CompanyHoliVO" id="CompHoliMap">
+	<result property="cohNo" column="COH_NO" />
+	<result property="coNo" column="CO_NO" />
+	<result property="cohNm" column="COH_NM" />
+	<result property="cohCont" column="COH_CONT" />
+	<result property="cohSdate" column="COH_SDATE" />
+	<result property="cohEdate" column="COH_EDATE" />
+	<result property="cohSubHoli" column="COH_SUB_HOLI" />
+	<result property="cohRepeatYn" column="COH_REPEAT_YN" />
+	<result property="cohEsntlYn" column="COH_ESNTL_YN" />
+	<result property="img" column="IMG" />
+	<result property="cohYn" column="COH_YN" />
+</resultMap>
+
+<select id="compHoliSelect" resultType="CompanyHoliVO">
+	SELECT
+	  COH_NO
+	  , CO_NO
+	  , COH_NM
+	  , COH_CONT
+	  , COH_SDATE
+	  , COH_EDATE
+	  , COH_SUB_HOLI
+	  , COH_REPEAT_YN
+	  , COH_ESNTL_YN
+	  , IMG
+	  , COH_YN
+	FROM COMPANY_HOLI
+	WHERE CO_NO = '1'
+	ORDER BY COH_SDATE
+</select>
+
+<!-- <update id="asgmtInsert" parameterType="java.util.List"> -->
+      
+   
+<!--       <foreach collection="list" item="asgmtVO" open="INSERT ALL" close="SELECT * FROM DUAL" separator=" " index="idx"> -->
+         
+<!--          INTO ASGMT(ASGMT_NO, ASGMT_PERS, WRITER, ASGMT_CLF, ASGMT_RSN,ASGMT_MM, ASGMT_DATE, FWR_DATE, LWR_DATE, ASGMT_CCST,DTCODE, PTN_CODE, JCODE, GRD_CODE, team) -->
+<!--           VALUES((SELECT NVL(MAX(ASGMT_NO),0)+1 FROM ASGMT)+#{idx}, #{asgmtVO.asgmtPers} , #{asgmtVO.writer}, #{asgmtVO.asgmtClf}, #{asgmtVO.asgmtRsn} -->
+<!--           ,#{asgmtVO.asgmtMm}, #{asgmtVO.asgmtDate}, sysdate, #{asgmtVO.lwrDate}, #{asgmtVO.asgmtCcst}, -->
+<!--           (select cm_code from cmcode where cm_nm = #{asgmtVO.dtcode} )  -->
+<!--           , #{asgmtVO.ptnCode} -->
+<!--           , #{asgmtVO.jcode}, #{asgmtVO.grdCode}, #{asgmtVO.team}) -->
+<!--       </foreach> -->
+<!-- </update> -->
+<!--  
+<update id="compHoliUpdate" parameterType="java.util.List">
+
+		UPDATE COMPANY_HOLI 
+		SET 
+	<foreach collection="list" item="item" >
+		  COH_YN = #{item.cohYn}
+		WHERE COH_NO = #{item.cohNo}
+	</foreach>
+	
+</update>
+-->
+
+<update id="compHoliUpdate" parameterType="CompanyHoliVO">
+	UPDATE COMPANY_HOLI 
+	SET COH_YN = #{cohYn}
+	WHERE COH_NO = #{cohNo}
+</update>
+
+<update id="compHoliUpdate2" parameterType="int">
+	UPDATE COMPANY_HOLI 
+	SET COH_YN = 'N'
+	WHERE COH_NO = #{cohNo}
+</update>
+
+<insert id="compHoliAdd" parameterType="CompanyHoliVO">
+	INSERT INTO COMPANY_HOLI
+		(COH_NO, CO_NO, COH_NM, COH_CONT, COH_SDATE, COH_EDATE, COH_ESNTL_YN, COH_REPEAT_YN, IMG, COH_YN)
+	VALUES
+		((SELECT NVL(MAX(COH_NO), 0) + 1 FROM COMPANY_HOLI)
+		, 1
+		, #{cohNm}
+		, #{cohCont}
+		, #{cohSdate}
+		, #{cohEdate}
+		, #{cohEsntlYn}
+		, #{cohRepeatYn}
+		, 'holiday.png'
+		, 'N')
+</insert>
+
+<delete id="compHoliRemove" parameterType="String">
+	DELETE FROM COMPANY_HOLI
+	WHERE COH_NO = #{cohNo}
+</delete>
+
+<select id="maxCohNoSelect" resultType="int">
+	SELECT MAX(COH_NO)
+	FROM COMPANY_HOLI
+</select>
+
+<select id="searchCompHoli" parameterType="String" resultType="int">
+	SELECT COUNT(COH_NM)
+	FROM COMPANY_HOLI
+	WHERE COH_NO = #{cohNo} AND COH_YN = 'Y'
+</select>
+
+</mapper>

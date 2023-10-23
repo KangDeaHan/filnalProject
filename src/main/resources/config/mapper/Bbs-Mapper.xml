@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.common.mapper.BbsMapper">
+
+<select id="bbsList" resultType="BbsVO">
+	select * from BBS
+</select>
+
+<insert id="BbsInsert" parameterType="BbsVO">
+    <selectKey keyProperty="bbsNo" resultType="int" order="BEFORE">
+        select bbs_seq.nextval from dual
+    </selectKey>
+    INSERT INTO BBS (
+          BBS_NO
+        , EMP_NO
+        , BBS_CLF
+        , BBS_TITLE
+        , BBS_CONT
+        , BBS_STIME
+        , BBS_ETIME
+        , BBS_COLOR
+        , BBS_ALLDAY
+    )
+    values (
+          #{bbsNo}
+        , #{empNo}
+        , #{bbsClf}
+        , #{bbsTitle}
+        , #{bbsCont}
+        , #{bbsStime}
+        , #{bbsEtime}
+        , COALESCE(#{bbsColor}, '#1A73E8')
+        , #{bbsAllday}
+    )
+</insert>
+
+<update id="BbsUpdate" parameterType="BbsVO">
+	update BBS
+	set   BBS_CLF    =  #{bbsClf}
+		, BBS_TITLE  =  #{bbsTitle}
+		, BBS_CONT   =  #{bbsCont}
+		, BBS_STIME  =  #{bbsStime}
+		, BBS_ETIME  =  #{bbsEtime}
+		, BBS_COLOR  =  #{bbsColor}
+		, BBS_ALLDAY =  #{bbsAllday}
+	WHERE BBS_NO = #{bbsNo}
+</update>
+
+<delete id="BbsDelete" parameterType="BbsVO">
+	delete from BBS
+	where BBS_NO = #{bbsNo}
+</delete>
+
+<select id="BbsSelect" resultType="BbsVO">
+    SELECT *
+    FROM BBS
+    WHERE EMP_NO = #{empNo}
+</select>
+
+	
+</mapper>

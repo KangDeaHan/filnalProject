@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.vacation.mapper.CusBkApplyMapper">
+	<resultMap type="BkApplyVO" id="BkApplyVOMap">
+		<result property="bkCertYn" column="BK_CERT_YN" />
+		<result property="fileSetting" column="FILE_SETTING" />
+		<result property="bkNo" column="BK_NO" />
+		<result property="empNo" column="EMP_NO" />
+		<result property="bkCode" column="BK_CODE" />
+		<result property="bkSdate" column="BK_SDATE" />
+		<result property="bkEdate" column="BK_EDATE" />
+		<result property="bkRsn" column="BK_RSN" />
+		<result property="bkApstCode" column="BK_APST_CODE" />
+		
+		<result property="bkName" column="BK_NM" />
+		<result property="dftNo" column="DFT_NO" />
+	</resultMap>
+
+	<!-- 로그인한 사원의 이름과 직위 자동 조회-->
+	<select id="EmpSelect" parameterType="String" resultType="empVO">
+		select EMP_NM , (SELECT CM_NM FROM CMCODE WHERE CM_CODE = PTN_CODE) PTN_CODE from EMP
+		where EMP_NO = #{empNo}
+		
+	</select>
+	<!--  	휴직 저장하기(insert) -->
+	<insert id="insertBkApply" parameterType="BkApplyVO">
+	    INSERT INTO BK_APPLY (BK_NO, EMP_NO, BK_CODE, BK_SDATE, BK_EDATE, BK_RSN, BK_APST_CODE, FILE_SETTING, BK_CERT_YN, FILE_SN,BKAP_DATE)
+	    VALUES (vac_seq.nextval, #{empNo}, 
+	    (SELECT BK_CODE FROM BK_KIND WHERE BK_NM = #{bkName}), 
+	    #{bkSdate}, #{bkEdate}, #{bkRsn}, #{bkApstCode}, #{fileSetting}, #{bkCertYn},
+	    #{fileSn},SYSDATE)
+	</insert>
+	<!-- 결재 요청 휴직 저장하기 -->
+	<insert id="insertBkApply1" parameterType="BkApplyVO">
+	    INSERT INTO BK_APPLY (BK_NO, EMP_NO, BK_CODE, BK_SDATE, BK_EDATE, BK_RSN, BK_APST_CODE, FILE_SETTING, BK_CERT_YN, DFT_NO, FILE_SN,BKAP_DATE)
+	    VALUES (vac_seq.nextval, #{empNo}, 
+	    (SELECT BK_CODE FROM BK_KIND WHERE BK_NM = #{bkName}), 
+	    #{bkSdate}, #{bkEdate}, #{bkRsn}, #{bkApstCode}, #{fileSetting}, #{bkCertYn}, (select max(DFT_NO) from DOC_WRI), 
+	    #{fileSn},SYSDATE)
+	</insert>
+	
+	<!-- 	신청한  휴직 내역 상태 조회 -->
+	<select id="getSelect" parameterType="String" resultMap="BkApplyVOMap">
+		select A.BK_NO, A.EMP_NO, A.BK_CODE, B.BK_NM ,A.DFT_NO,
+		TO_CHAR(A.BK_SDATE, 'yyyy-mm-dd') AS BK_SDATE, TO_CHAR(A.BK_EDATE, 'yyyy-mm-dd') AS BK_EDATE, 
+         (select CM_NM from CMCODE where CM_CODE= A.BK_CERT_YN) BK_CERT_YN,(select CM_NM from CMCODE where CM_CODE= A.BK_APST_CODE) BK_APST_CODE
+		from BK_APPLY A, BK_KIND B 
+		WHERE A.BK_CODE = B.BK_CODE AND EMP_NO=#{empNo}
+	</select>
+	
+	<!-- 신청된 휴직 내역에서 모달 속 리스트별 조회 -->
+	<select id= "bkSelectOne" parameterType="int" resultMap="BkApplyVOMap">
+		SELECT ba.BK_NO, ba.EMP_NO, ba.BK_CODE ,to_char(ba.BK_SDATE,'yyyy-MM-dd') BK_SDATE, 
+        	   to_char(ba.BK_EDATE,'yyyy-MM-dd') BK_EDATE,
+		       ba.BK_RSN, ba.BK_APST_CODE, ba.FILE_SETTING, ba.BK_CERT_YN,bk.BK_NM,
+		       ba.DFT_NO, ba.FILE_SN
+		FROM BK_apply ba
+		INNER JOIN BK_KIND bk ON ba.BK_CODE = bk.BK_CODE OR ba.BK_CODE = bk.BK_NM
+		WHERE ba.BK_NO = #{bkNo}
+		ORDER BY 1 DESC
+	</select>
+
+	<!-- 	파일 insert -->
+	<insert id="fileInsert" parameterType="FileInfoVO">
+		<selectKey resultType="int" order="BEFORE" keyProperty="fileSn">
+			SELECT NVL(MAX(FILE_SN),0) + 1 FROM FILE_INFO WHERE FILE_UDTER = #{fileUdter}
+		</selectKey>
+		INSERT INTO FILE_INFO(
+		    FILE_SN, ORFI_NAME, SVFI_NAME, FILE_SIZE,  
+		    SV_DATE, FILE_UDTER, FILE_ROOT, FILE_SETTING 
+		)VALUES(
+			#{fileSn},#{orfiName},#{svfiName},#{fileSize},sysdate,#{fileUdter},#{fileRoot},#{fileSetting}
+		)
+	</insert>
+	<!-- 	파일 순번 가져오기 -->
+	<select id="fileSnSelect" resultType="int">
+		SELECT MAX(FILE_SN) FROM FILE_INFO WHERE FILE_SETTING = 'vacation'
+	</select>
+	
+	<!-- fileInfo 내용 전부 가져오기 -->
+	<select id ="fileInfo" resultType="FileInfoVO">
+		SELECT * FROM FILE_INFO
+        WHERE FILE_SN IN (SELECT FILE_SN FROM bk_Apply WHERE FILE_SN =#{fileSn})
+	</select>
+	
+	   <!-- 신청 내역 모달 bkapplyVO내용 업데이트 -->
+	<update id="bkUpdate" parameterType="BkApplyVO" >
+	    UPDATE BK_APPLY
+		SET 
+		    BK_SDATE = #{bkSdate},
+		    BK_EDATE = #{bkEdate},
+		    BK_RSN = #{bkRsn},
+		    BK_CERT_YN= #{bkCertYn},
+		    BK_APST_CODE = #{bkApstCode}
+		WHERE
+		    BK_NO = #{bkNo}
+	</update>
+	
+	<!-- UPDATE BK_APPLY SET FILE_SN = fileSn번호 WHERE BK_NO = bkApplyVO의 bkNo멤버변수값 -->
+	<update id="bkFileUpdate" parameterType="BkApplyVO">
+		UPDATE BK_APPLY SET FILE_SN = #{fileSn} WHERE BK_NO = #{bkNo}
+	</update>
+	
+	<!-- 신청 내역 모달 fileInfo내용 업데이트 -->
+	<update id="fileUpdate" parameterType="FileInfoVO">
+		UPDATE FILE_INFO
+		SET 
+		  ORFI_NAME = #{orfiName}, 
+          SVFI_NAME = #{svfiName}, 
+          FILE_SIZE = #{fileSize},
+          SV_DATE = #{svDate},
+          FILE_UDTER = #{fileUdter},
+          FILE_ROOT = #{fileRoot},
+          FILE_SETTING = #{fileSetting}
+		WHERE
+		    FILE_SN = #{fileSn}
+	</update>
+	
+	<!-- 복직 신청 사원번호로 자동 select -->
+	<select id="selectEmpInfo" parameterType="String" resultType="empVO">
+		 SELECT e.emp_no, d.DNM, e.EMP_NM, (select CM_NM from CMCODE where CM_CODE = PTN_CODE)PTN_CODE 
+		FROM EMP e
+		INNER JOIN DEPT d ON e.DCODE = d.DCODE  
+		WHERE e.EMP_NO= #{empNo}
+		ORDER BY 1 DESC
+	</select>
+	<!-- 복직 신청  -->
+	<insert id="insertReqst" parameterType="RsReqstVO">
+	 	 insert into RS_REQST(RS_NO, BK_NO, EMP_NO, RS_DATE, RS_RESN, RS_APST_CODE, DFT_NO)
+        values(vac_seq.nextval,#{bkNo},#{empNo},#{rsDate},#{rsResn},'C0104',(select DFT_NO from DOC_WRI WHERE DFT_NO = #{dftNo}))
+	</insert>
+
+	<!-- 복직 신청 내역 조회 -->
+	<select id="selectRsList" parameterType="String" resultType="RsReqstVO">
+	 SELECT r.emp_no, d.DNM, e.EMP_NM, (select CM_NM from CMCODE where CM_CODE = PTN_CODE)PTN_CODE
+        ,TO_CHAR(r.RS_DATE,'yyyy-mm-dd') RS_DATE
+        ,(select CM_NM from CMCODE where CM_CODE= r.RS_APST_CODE) RS_APST_CODE
+        ,r.RS_NO
+		FROM RS_REQST r
+        INNER JOIN EMP e ON e.EMP_NO = r.EMP_NO
+		INNER JOIN DEPT d ON e.DCODE = d.DCODE 
+		WHERE r.EMP_NO= #{empNo}
+		ORDER BY 1 DESC
+	</select>
+	
+	<!-- 복직 신청 모달 조회 -->
+	<select id="rsModalSelect" parameterType="int" resultType="RsReqstVO">
+        	 SELECT r.RS_NO, r.BK_NO, r.EMP_NO, TO_CHAR(r.RS_DATE,'yyyy-mm-dd') RS_DATE, r.RS_RESN, r.RS_APST_CODE, d.DNM, e.EMP_NM, 
+        (select CM_NM from CMCODE where CM_CODE = PTN_CODE)PTN_CODE 
+		FROM RS_REQST r
+        INNER JOIN EMP e ON r.EMP_NO = e.EMP_NO
+        INNER JOIN DEPT d ON e.dcode = d.dcode
+		WHERE r.RS_NO = #{rsNo}
+		ORDER BY 1 DESC
+	</select>
+	<!-- 복직 신청 모달 수정 -->
+	<update id="rsModalUpdate" parameterType="RsReqstVO">
+	UPDATE RS_REQST
+		SET 
+		    RS_Resn = #{rsResn},
+            RS_Date = #{rsDate}
+		WHERE
+		    RS_NO = #{rsNo}
+	</update>
+	<!-- 복직 결재선 올리기-->
+	<!-- 문서작성테이블에 담긴 DFT_NO 조회 -->
+	<select id ="WriSelect" parameterType="DocWriVO" resultType="int">
+		select max(DFT_NO) from DOC_WRI
+	</select>
+	
+	<!-- 복직 결재 신청하는데 일단 문서 작성 테이블에 담기-->
+	<insert id="WriInsert" parameterType="DocWriVO">
+		INSERT into DOC_WRI (DFT_NO, EMP_NO, DOC_KIND)
+   		VALUES(#{dftNo}+1,#{empNo},'복직신청')
+	</insert>
+	
+	 <insert id="apboxInsert" parameterType="ApboxVO">
+      <selectKey>
+         SELECT NVL(MAX(SERIAL_NUMBER),0)+1 FROM APBOX WHERE DFT_NO = #{dftNo}
+      </selectKey>
+      INSERT INTO APBOX(EMP_NO, DFT_NO, AP_DATE, REJ_RSN, ARB_ST, FIN_AUTH_ST, SERIAL_NUMBER)
+      VALUES(#{empNo},#{dftNo}+1,SYSDATE,#{rejRsn},#{arbSt},#{finAuthSt},#{serialNumber})
+     </insert>
+	
+	<!--상태코드 업데이트 -->
+	<update id="apstCodeUpdate" parameterType="int">
+	  update RS_REQST set RS_APST_CODE = 'C0101' where RS_NO=#{rsNo}
+	</update>
+	
+	
+	<!-- 휴직 결재 신청 올리기 -->
+	<!-- 문서작성테이블에 담긴 DFT_NO 조회 -->
+	<select id ="bkWriSelect" parameterType="DocWriVO" resultType="int">
+		select max(DFT_NO) from DOC_WRI
+	</select>
+	
+	<!-- 휴직 결재 신청하는데 일단 문서 작성 테이블에 담기-->
+	<insert id="bkWriInsert" parameterType="DocWriVO">
+		INSERT into DOC_WRI (DFT_NO, EMP_NO, DOC_KIND)
+   		VALUES(#{dftNo}+1,#{empNo},'휴직신청')
+	</insert>
+	
+	 <insert id="bkApboxInsert" parameterType="ApboxVO">
+      <selectKey>
+         SELECT NVL(MAX(SERIAL_NUMBER),0)+1 FROM APBOX WHERE DFT_NO = #{dftNo}
+      </selectKey>
+      INSERT INTO APBOX(EMP_NO, DFT_NO, AP_DATE, REJ_RSN, ARB_ST, FIN_AUTH_ST, SERIAL_NUMBER)
+      VALUES(#{empNo},#{dftNo}+1,SYSDATE,#{rejRsn},#{arbSt},#{finAuthSt},#{serialNumber})
+     </insert>
+	
+<!-- 	상태코드 업데이트 -->
+	<update id="bkApstCodeUpdate" parameterType="BkApplyVO">
+		update BK_APPLY 
+		set Dft_NO=#{dftNo}+1, BK_APST_CODE = 'C0101',BK_CERT_YN= 'B0103' where BK_NO=#{bkNo}
+	</update>
+<!-- 모달속 결제시 업데이트 -->
+	<select id="bkNo" resultType="BkApplyVO">
+		select bk_no from bk_apply
+	</select>
+	
+	<select id="fileSn" parameterType="int" resultType="int">
+		select file_sn from bk_apply where bk_no=#{bkNo}
+	</select>
+	<!-- 	결재선에서 승인 반려 진행 상황에 따른 조회 -->
+	
+	<select id="dftNoSelect" parameterType="int" resultType="BkApplyVO">
+		select dft_no from bk_apply where bk_no=#{bkNo}
+	</select>
+	
+	<select id="apboxSelect" parameterType="int" resultType="ApboxVO">
+		select ap.EMP_no,ap.dft_no,ap.apb_pro, ap.SERIAL_NUMBER,e.emp_NM, FN_GET_CM_NM(ptn_code) as ptnCode, e.SIGN_FILE_NO,ap.REJ_RSN,
+			(SELECT DISTINCT SVFI_NAME FROM FILE_INFO WHERE FILE_UDTER = e.EMP_NO AND 
+			FILE_SN = (SELECT MAX(FILE_SN) FROM FILE_INFO WHERE FILE_SETTING = 'temp'
+			AND FILE_UDTER = e.EMP_NO))AS SIGN_IMG
+		from apbox ap
+		inner join emp e on ap.emp_no = e.emp_no 
+		where dft_no=#{dftNo}
+	</select>
+	
+	<!-- 내 문서 결재자 리스트 -->
+	<select id="apBoxList" parameterType="int" resultType="ApboxVO">
+		SELECT EMP_NO, DFT_NO, AP_DATE, REJ_RSN, ARB_ST, FIN_AUTH_ST, SERIAL_NUMBER, APB_PRO, APB_IMPORTANT FROM APBOX WHERE DFT_NO = #{dftNo}
+	</select>
+	
+	
+</mapper>

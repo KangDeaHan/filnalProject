@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.setting.mapper.CompVacMapper">
+
+<select id="selectFileList" resultType="FileInfoVO">
+	SELECT
+		FILE_SN
+		, ORFI_NAME
+		, SVFI_NAME
+		, FILE_SIZE
+		, SV_DATE
+		, FILE_UDTER
+		, FILE_ROOT
+		, FILE_SETTING
+	FROM FILE_INFO
+	WHERE FILE_SETTING = 'vacationIcon'
+	ORDER BY FILE_SN
+</select>
+
+<insert id="vacTypeAdd" parameterType="VacTypeVO">
+	INSERT INTO VAC_TYPE
+		(VAC_TYPE_NO
+		, VAC_TYPE_NAME
+		, VAC_TYPE_EXP
+		, VAC_TYPE_USE_DATE
+		, IMG_ROOT
+		, VH_INFO
+		, VAC_TYPE_TIME
+		, VAC_TYPE_HOLI
+		, VAC_TYPE_SAL
+		, VAC_TYPE_GENDER
+		, VAC_TYPE_FILE
+		, VAC_TYPE_YN)
+	VALUES
+		((SELECT NVL(MAX(VAC_TYPE_NO),0)+1 FROM VAC_TYPE)
+		, #{vacTypeName}
+		, #{vacTypeExp}
+		, #{vacTypeUseDate}
+		, #{imgRoot}
+		, #{vhInfo}
+		, #{vacTypeTime}
+		, #{vacTypeHoli}
+		, #{vacTypeSal}
+		, #{vacTypeGender}
+		, #{vacTypeFile}
+		, 'Y')
+
+</insert>
+
+<select id="getVacType" parameterType="int" resultType="VacTypeVO">
+	SELECT 
+		VAC_TYPE_NO
+		, VAC_TYPE_NAME
+		, VAC_TYPE_EXP
+		, VAC_TYPE_USE_DATE
+		, IMG_ROOT
+		, VH_INFO
+		, VAC_TYPE_TIME
+		, VAC_TYPE_HOLI
+		, VAC_TYPE_SAL
+		, VAC_TYPE_GENDER
+		, VAC_TYPE_FILE
+		, VAC_TYPE_YN 
+	FROM VAC_TYPE 
+	WHERE VAC_TYPE_NO = #{vacTypeNo}
+</select>
+
+<select id="vacTypeList" resultType="VacTypeVO">
+ 	SELECT 
+ 		VAC_TYPE_NO
+		, VAC_TYPE_NAME
+		, VAC_TYPE_EXP
+		, VAC_TYPE_USE_DATE
+		, IMG_ROOT
+		, VH_INFO
+		, VAC_TYPE_TIME
+		, VAC_TYPE_HOLI
+		, VAC_TYPE_SAL
+		, VAC_TYPE_GENDER
+		, VAC_TYPE_FILE  
+		, VAC_TYPE_YN
+	FROM VAC_TYPE ORDER BY VAC_TYPE_NO
+</select>
+
+<update id="vacTypeUp" parameterType="VacTypeVO">
+	UPDATE VAC_TYPE
+	SET VAC_TYPE_NAME = #{vacTypeName}
+		, VAC_TYPE_EXP = #{vacTypeExp}
+		, VAC_TYPE_USE_DATE = #{vacTypeUseDate}
+		, IMG_ROOT = #{imgRoot}
+		, VH_INFO = #{vhInfo}
+		, VAC_TYPE_TIME = #{vacTypeTime}
+		, VAC_TYPE_HOLI = #{vacTypeHoli}
+		, VAC_TYPE_SAL = #{vacTypeSal}
+		, VAC_TYPE_GENDER = #{vacTypeGender}
+		, VAC_TYPE_FILE = #{vacTypeFile}
+	WHERE VAC_TYPE_NO = #{vacTypeNo}
+</update>
+
+<update id="vacTypeDel" parameterType="String">
+	UPDATE VAC_TYPE
+	SET VAC_TYPE_YN = 'N'
+	WHERE VAC_TYPE_NO = #{vacTypeNo}
+</update>
+	
+</mapper>

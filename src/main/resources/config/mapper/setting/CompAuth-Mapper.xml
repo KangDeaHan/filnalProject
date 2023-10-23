@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.setting.mapper.CompAuthMapper">
+
+<select id="getAuthList1" resultType="AcntAuthorVO">
+	SELECT 
+		AUTHRT_ID
+		, AUTHRT_NM
+		, AUTHRT_EXPLN
+		, AUTHRT_BA_YN
+		, AUTHRT_SN
+		, AUTHRT_YN
+	FROM ACNT_AUTHOR
+	WHERE AUTHRT_BA_YN = 'Y'
+	ORDER BY AUTHRT_SN
+</select>
+
+<select id="getAuthList2" resultType="AcntAuthorVO">
+	SELECT 
+		AUTHRT_ID
+		, AUTHRT_NM
+		, AUTHRT_EXPLN
+		, AUTHRT_BA_YN
+		, AUTHRT_SN
+		, AUTHRT_YN
+	FROM ACNT_AUTHOR
+	WHERE AUTHRT_BA_YN = 'N' AND NOT AUTHRT_ID = 'ROLE_WORK_AP'
+	ORDER BY AUTHRT_SN
+</select>
+
+<select id="getMenuList1" resultType="MenuVO"> 
+	SELECT
+		MENU_NO
+		, PARENT_MNO
+		, MENU_NM
+	FROM MENU
+	WHERE PARENT_MNO IS NULL
+	ORDER BY MENU_NO
+</select>
+
+<select id="getMenuList2" resultType="MenuVO"> 
+	SELECT
+		MENU_NO
+		, PARENT_MNO
+		, MENU_NM
+	FROM MENU
+	WHERE PARENT_MNO IS NOT NULL
+	ORDER BY MENU_NO
+</select>
+
+<insert id="authAdd" parameterType="AcntAuthorVO">
+	INSERT INTO ACNT_AUTHOR
+		(AUTHRT_ID
+		, AUTHRT_NM
+		, AUTHRT_EXPLN
+		, AUTHRT_BA_YN
+		, AUTHRT_SN
+		, AUTHRT_YN
+		, IMG_ROOT)
+	VALUES
+		('ROLE_CUSTOM' || (SELECT TO_CHAR(TO_NUMBER(REGEXP_REPLACE(AUTHRT_ID, '[^0-9]', '')) + 1) 
+		FROM ACNT_AUTHOR WHERE AUTHRT_SN = (SELECT MAX(AUTHRT_SN) FROM ACNT_AUTHOR))
+		, #{authrtNm}
+		, #{authrtExpln}
+		, 'N'
+		, (SELECT NVL(MAX(AUTHRT_SN),0)+1 FROM ACNT_AUTHOR)
+		, 'Y'
+		, '')
+</insert>
+
+<insert id="authMenuAdd1" parameterType="AcntAuthorVO">
+	<selectKey keyProperty="authrtId" resultType="String" order="BEFORE" >
+		SELECT AUTHRT_ID FROM ACNT_AUTHOR WHERE AUTHRT_SN = (SELECT MAX(AUTHRT_SN) FROM ACNT_AUTHOR)
+	</selectKey>
+	INSERT INTO AUTH_MENU 
+		(AUTHRT_ID
+		, MENU_NO
+		, MENU_READ_CD
+		, MENU_WRI_CD
+		, MENU_DEL_CD)
+	VALUES
+		(#{authrtId}
+		, #{menuNo}
+		, 'Y'
+		, null
+		, null)
+</insert>
+
+<insert id="authMenuAdd2" parameterType="AcntAuthorVO">
+	<selectKey keyProperty="authrtId" resultType="String" order="BEFORE" >
+		SELECT AUTHRT_ID FROM ACNT_AUTHOR WHERE AUTHRT_SN = (SELECT MAX(AUTHRT_SN) FROM ACNT_AUTHOR)
+	</selectKey>
+	INSERT INTO AUTH_MENU 
+		(AUTHRT_ID
+		, MENU_NO
+		, MENU_READ_CD
+		, MENU_WRI_CD
+		, MENU_DEL_CD)
+	VALUES
+		(#{authrtId}
+		, #{menuNo}
+		, 'N'
+		, null
+		, null)
+</insert>
+
+<select id="getAuthInfo" parameterType="int" resultType="AcntAuthorVO">
+	SELECT 
+		AUTHRT_ID
+		, AUTHRT_NM
+		, AUTHRT_EXPLN
+		, AUTHRT_BA_YN
+		, AUTHRT_SN
+		, AUTHRT_YN
+		, IMG_ROOT
+	FROM ACNT_AUTHOR
+	WHERE AUTHRT_SN = #{authrtSn}
+</select>
+
+<select id="getAuthMenu" parameterType="String" resultType="AuthMenuVO">
+	SELECT
+		AUTHRT_ID
+		, MENU_NO
+		, MENU_READ_CD
+	FROM AUTH_MENU
+	WHERE AUTHRT_ID = #{authrtId}
+</select>
+
+<update id="authUp" parameterType="AcntAuthorVO">
+	UPDATE ACNT_AUTHOR
+	SET AUTHRT_NM = #{authrtNm}
+		, AUTHRT_EXPLN = #{authrtExpln}
+	WHERE AUTHRT_ID = #{authrtId}
+</update>
+
+<update id="authMenuUp1" parameterType="map">
+	UPDATE AUTH_MENU
+	SET MENU_READ_CD = 'Y'
+	WHERE AUTHRT_ID = #{authrtId} AND MENU_NO = #{menuNo1}
+</update>
+
+<update id="authMenuUp2" parameterType="map">
+	UPDATE AUTH_MENU
+	SET MENU_READ_CD = 'N'
+	WHERE AUTHRT_ID = #{authrtId} AND MENU_NO = #{menuNo2}
+</update>
+
+<insert id="authEmpAdd" parameterType="map">
+	INSERT INTO AUTHOR_ALWNC
+		(AUTHRT_ID
+		, EMP_NO)
+	VALUES
+		(#{authrtId}
+		, #{empNo})
+</insert>
+
+<select id="getAuthEmp" parameterType="map" resultType="int">
+	SELECT
+		COUNT(EMP_NO)
+	FROM AUTHOR_ALWNC
+	WHERE EMP_NO = #{empNo} AND AUTHRT_ID = #{authrtId}
+</select>
+
+<select id="getAuthEmpList" parameterType="String" resultType="EmpVO">
+	SELECT
+	    E.EMP_NO
+	    , (SELECT DNM FROM DEPT WHERE DCODE = (SELECT DCODE FROM EMP WHERE EMP_NO = A.EMP_NO)) DNM
+	    , (SELECT CM_NM FROM CMCODE WHERE CM_CODE = (SELECT PTN_CODE FROM EMP WHERE EMP_NO = A.EMP_NO)) PTN_CODE
+	    , E.EMP_NM
+	FROM AUTHOR_ALWNC A
+	INNER JOIN EMP E ON A.EMP_NO = E.EMP_NO
+	WHERE AUTHRT_ID = #{authrtId}
+	ORDER BY DNM
+</select>
+
+<select id="getAddEmp" parameterType="String" resultType="EmpVO">
+    SELECT
+	    EMP_NO
+	    , (SELECT DNM FROM DEPT WHERE DCODE = (SELECT DCODE FROM EMP WHERE EMP_NO = #{empNo})) DNM
+	    , (SELECT CM_NM FROM CMCODE WHERE CM_CODE = (SELECT PTN_CODE FROM EMP WHERE EMP_NO = #{empNo})) PTN_CODE
+	    , EMP_NM
+	FROM EMP
+	WHERE EMP_NO = #{empNo}
+</select>
+
+<delete id="authEmpDel" parameterType="map">
+	DELETE FROM AUTHOR_ALWNC
+	WHERE AUTHRT_ID = #{authrtId} AND EMP_NO = #{empNo}
+</delete>
+
+<select id="getAuthEmpList2" parameterType="String" resultType="int">
+	SELECT
+		COUNT(EMP_NO)
+	FROM AUTHOR_ALWNC
+	WHERE AUTHRT_ID = #{authrtId}
+</select>
+
+<update id="authDel" parameterType="int">
+	UPDATE ACNT_AUTHOR
+	SET AUTHRT_YN = 'N'
+	WHERE AUTHRT_SN = #{authrtSn}
+</update>
+	
+</mapper>

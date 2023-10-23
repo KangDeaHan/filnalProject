@@ -1,0 +1,870 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.personnel.mapper.MemberMapper">
+
+	<!-- 사원테이블 -->
+	<resultMap type="empVO" id="empMap">
+		<result property="empNo" column="EMP_NO"/>
+		<result property="empNm" column="EMP_NM"/>
+		<result property="empPass" column="EMP_PASS"/>
+		<result property="genCode" column="GEN_CODE"/>
+		<result property="empMail" column="EMP_MAIL"/>
+		<result property="empAddr1" column="EMP_ADDR1"/>
+		<result property="empAddr2" column="EMP_ADDR2"/>
+		<result property="empAddr3" column="EMP_ADDR3"/>
+		<result property="empBrdt" column="EMP_BRDT"/>
+		<result property="regn" column="REGN"/>
+		<result property="cpNo" column="CP_NO"/>
+		<result property="ofcNo" column="OFC_NO"/>
+		<result property="empImg" column="EMP_IMG"/>
+		<result property="bankCode" column="BANK_CODE"/>
+		<result property="acctNo" column="ACCT_NO"/>
+		<result property="owner" column="OWNER"/>
+		<result property="entDate" column="ENT_DATE"/>
+		<result property="outDate" column="OUT_DATE"/>
+		<result property="empMm" column="EMP_MM"/>
+		<result property="ctrtCaseCode" column="CTRT_CASE_CODE"/>
+		<result property="entCaseCode" column="ENT_CASE_CODE"/>
+		<result property="bsWktime" column="BS_WKTIME"/>
+		<result property="dtcode" column="DTCODE"/>
+		<result property="ptnCode" column="PTN_CODE"/>
+		<result property="jcode" column="JCODE"/>
+		<result property="grdCode" column="GRD_CODE"/>
+		<result property="enabled" column="ENABLED"/>
+		<result property="stClfCd" column="ST_CLF_CD"/>
+		<result property="empSalary" column="EMP_SALARY"/>
+		<result property="profileFileNo" column="PROFILE_FILE_NO"/>
+		<result property="signFileNo" column="SIGN_FILE_NO"/>
+		<result property="workMethodCode" column="WORK_METHOD_CODE"/>
+		<result property="dcode" column="DCODE"/>
+		<result property="acenter" column="ACENTER"/>
+		<result property="team" column="TEAM"/>
+		
+		<!--  코드네임 -->
+		<result property="genCodeNm" column="GEN_CODE_NM"/>
+		<result property="bankCodeNm" column="BANK_CODE_NM"/>
+		<result property="ctrtCaseNm" column="CTRT_CASE_NM"/>
+		<result property="entCaseNm" column="ENT_CASE_NM"/>
+		<result property="dtCodeNm" column="DTCODE_NM"/>
+		<result property="ptnCodeNm" column="PTN_CODE_NM"/>
+		<result property="jcodeNm" column="JCODE_NM"/>
+		<result property="grdCodeNm" column="GRD_CODE_NM"/>
+		<result property="stClfCdNm" column="ST_CLF_CD_NM"/>
+		<result property="workMethodCodeNm" column="WORK_METHOD_CODE_NM"/>
+		
+		
+		<!-- 부서 테이블 -->	
+		<collection property="deptVOList" resultMap="deptMap" />
+		
+		
+		<!-- 계약이력정보 -->
+		<collection property="cnthxVOList" resultMap="cnthxMap" />
+		
+		
+		<!-- 권한부여 -->	
+		<collection property="authoAlwncVOList" resultMap="authMap" />
+	</resultMap>
+
+
+
+	<!-- 부서 테이블 -->
+	<resultMap type="deptVO" id="deptMap">
+		<result property="dcode" column="DCODE"/>
+		<result property="uprDcode" column="UPR_DCODE"/>
+		<result property="dnm" column="DNM"/>
+		<result property="empNo" column="EMP_NO"/>
+		<result property="dabst" column="DABST"/>
+		<result property="delynCd" column="DELYN_CD"/>
+	</resultMap>
+
+	
+
+	<!-- 공통코드 테이블 -->
+	<resultMap type="cmCodeVO" id="cmCodeMap">
+		<result property="cmCode" column="CM_CODE"/>
+		<result property="parentCd" column="PARENT_CD"/>
+		<result property="cmNm" column="CM_NM"/>
+		<result property="cmAbst" column="CM_ABST"/>
+		<result property="cmUseYn" column="CM_USE_YN"/>
+		<result property="cmOtptSn" column="CM_OTPT_SN"/>
+		<result property="cmRegDate" column="CM_REG_DATE"/>
+		<result property="cmWriDate" column="CM_WRI_DATE"/>
+		<result property="cmGroup" column="CM_GROUP"/>
+	</resultMap>
+	
+	<!-- 계약변경이력 테이블 -->
+	<resultMap type="cnthxVO" id="cnthxMap">
+		<result property="cnthxNo" column="CNTHX_NO"/>
+		<result property="empNo" column="EMP_NO"/>
+		<result property="cntWriter" column="CNT_WRITER"/>
+		<result property="blctSdate" column="BLCT_SDATE"/>
+		<result property="blctEdate" column="BLCT_EDATE"/>
+		<result property="ctrtCaseCode" column="CTRT_CASE_CODE"/>
+		<result property="bwctSdate" column="BWCT_SDATE"/>
+		<result property="bwctEdate" column="BWCT_EDATE"/>
+		<result property="bcntAmt" column="BCNT_AMT"/>
+		<result property="bfex" column="BFEX"/>
+		<result property="bincClf" column="BINC_CLF"/>
+		<result property="cngDate" column="CNG_DATE"/>
+		<result property="cngMm" column="CNG_MM"/>
+		<result property="prSdate" column="PR_SDATE"/>
+		<result property="prEdate" column="PR_EDATE"/>
+		<result property="cntEditor" column="CNT_EDITOR"/>
+		<result property="editDate" column="EDIT_DATE"/>
+		<result property="delyn" column="DELYN"/>
+	</resultMap>
+	
+	<resultMap type="AsgmtVO" id="asgmtMap">
+		<result property="asgmtNo" column="ASGMT_NO"/>
+		<result property="asgmtPers" column="ASGMT_PERS"/>
+		<result property="writer" column="WRITER"/>
+		<result property="asgmtClf" column="ASGMT_CLF"/>
+		<result property="asgmtRsn" column="ASGMT_RSN"/>
+		<result property="asgmtMm" column="ASGMT_MM"/>
+		<result property="asgmtDate" column="ASGMT_DATE"/>
+		<result property="fwrDate" column="FWR_DATE"/>
+		<result property="lwrDate" column="LWR_DATE"/>
+		<result property="asgmtCcst" column="ASGMT_CCST"/>
+		<result property="dtcode" column="DTCODE"/>
+		<result property="ptnCode" column="PTN_CODE"/>
+		<result property="jcode" column="JCODE"/>
+		<result property="grdCode" column="GRD_CODE"/>
+		<result property="dcode" column="DCODE"/>
+		<collection property="empVO" resultMap="empMap2"/>
+	</resultMap>
+	
+	<!-- 파일정보 테이블 -->
+	<resultMap type="fileInfoVO" id="fileInfoMap">
+		<result property="fileSn" column="FILE_SN"/>
+		<result property="orfiName" column="ORFI_NAME"/>
+		<result property="svfiName" column="SVFI_NAME"/>
+		<result property="fileSize" column="FILE_SIZE"/>
+		<result property="svDate" column="SV_DATE"/>
+		<result property="fileUdter" column="FILE_UDTER"/>
+		<result property="fileRoot" column="FILE_ROOT"/>
+		<result property="fileSetting" column="FILE_SETTING"/>
+	</resultMap>	
+	
+
+	<!-- 권한부여 테이블 -->
+	<resultMap type="authorAlwncVO" id="authMap">
+		<result property="authrtId" column="AUTHRT_ID"/>
+		<result property="empNo" column="EMP_NO"/>
+	</resultMap>
+	
+	
+
+	<resultMap type="empVO" id="empMap2">
+		<result property="signFileNo" column="SIGN_FILE_NO" />
+		<result property="profileFileNo" column="PROFILE_FILE_NO" />
+		<result property="empSalary" column="EMP_SALARY" />
+		<result property="stClfCd" column="ST_CLF_CD" />
+		<result property="enabled" column="ENABLED" />
+		<result property="grdCode" column="GRD_CODE" />
+		<result property="jcode" column="JCODE" />
+		<result property="ptnCode" column="PTN_CODE" />
+		<result property="dtcode" column="DTCODE" />
+		<result property="bsWktime" column="BS_WKTIME" />
+		<result property="entCaseCode" column="ENT_CASE_CODE" />
+		<result property="ctrtCaseCode" column="CTRT_CASE_CODE" />
+		<result property="empMm" column="EMP_MM" />
+		<result property="outDate" column="OUT_DATE" />
+		<result property="entDate" column="ENT_DATE" />
+		<result property="owner" column="OWNER" />
+		<result property="acctNo" column="ACCT_NO" />
+		<result property="bankCode" column="BANK_CODE" />
+		<result property="empImg" column="EMP_IMG" />
+		<result property="ofcNo" column="OFC_NO" />
+		<result property="cpNo" column="CP_NO" />
+		<result property="regn" column="REGN" />
+		<result property="empBrdt" column="EMP_BRDT" />
+		<result property="empAddr3" column="EMP_ADDR3" />
+		<result property="empAddr2" column="EMP_ADDR2" />
+		<result property="empAddr1" column="EMP_ADDR1" />
+		<result property="empMail" column="EMP_MAIL" />
+		<result property="genCode" column="GEN_CODE" />
+		<result property="empPass" column="EMP_PASS" />
+		<result property="empNm" column="EMP_NM" />
+		<result property="empNo" column="EMP_NO" />
+		<result property="workMethodCode" column="WORK_METHOD_CODE" />
+		<result property="dcode" column="DCODE" />
+		<result property="genCodeNm" column="GEN_CODE" />
+		<result property="bankCodeNm" column="BANK_CODE" />
+		<result property="ctrtCaseNm" column="CTRT_CASE_CODE" />
+		<result property="entCaseNm" column="ENT_CASE_CgODE" />
+		<result property="dtCodeNm" column="DTCODE" />
+		<result property="ptnCodeNm" column="PTN_CODE" />
+		<result property="jcodeNm" column="JCODE" />
+		<result property="grdCodeNm" column="GRD_CODE" />
+		<result property="stClfCdNm" column="ST_CLF_CD" />
+		<result property="workMethodCodeNm" column="WORK_METHOD_CODE" />
+	</resultMap>
+	
+
+	
+
+	
+	<!-- empNo 사원정보 조회 쿼리 -->
+	<select id="read" resultMap="empMap" parameterType="EmpVO">
+		select A.EMP_NO, A.EMP_NM, A.EMP_PASS, A.GEN_CODE, A.EMP_MAIL
+	       , A.EMP_ADDR1, A.EMP_ADDR2, A.EMP_ADDR3, A.EMP_BRDT, A.REGN
+	       , A.CP_NO, A.OFC_NO, A.EMP_IMG, A.BANK_CODE, A.ACCT_NO
+	       , A.OWNER, A.ENT_DATE, A.OUT_DATE, A.EMP_MM, A.CTRT_CASE_CODE
+	       , A.ENT_CASE_CODE, A.BS_WKTIME, A.DTCODE, A.PTN_CODE, A.JCODE
+	       , A.GRD_CODE, A.ENABLED, A.ST_CLF_CD, A.EMP_SALARY, A.PROFILE_FILE_NO, A.SIGN_FILE_NO
+	       
+	       , B.AUTHRT_ID 
+		from EMP A , AUTHOR_ALWNC B 
+		where A.EMP_NO = #{empNo} and A.EMP_NO = B.EMP_NO
+	</select>
+
+	
+	<!-- 전체 사원정보 가져오기(병철이) -->
+	<select id="memberList" resultMap="empMap" >
+		select * from EMP 
+	</select>
+	
+	
+	<!-- 전체 사원정보 가져오기(우재) -->
+	<select id="empList" resultMap="empMap" parameterType="String" >
+		SELECT A.EMP_NO,A.EMP_NM ,A.EMP_PASS ,A.GEN_CODE
+		   ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'gender' AND CM_CODE = GEN_CODE) AS GEN_CODE_NM
+		   ,A.EMP_MAIL ,A.EMP_ADDR1 ,A.EMP_ADDR2 ,A.EMP_ADDR3 ,A.EMP_BRDT ,A.REGN
+		   ,A.CP_NO,A.OFC_NO ,A.EMP_IMG ,A.BANK_CODE ,A.ACCT_NO
+		   ,A.OWNER,A.ENT_DATE ,A.OUT_DATE ,A.EMP_MM ,A.CTRT_CASE_CODE
+		   ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'contract' AND CM_CODE = CTRT_CASE_CODE) AS CTRT_CASE_NM
+		   ,A.ACENTER ,A.DCODE
+		   ,A.ENT_CASE_CODE
+		   ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'join' AND CM_CODE = ENT_CASE_CODE) AS ENT_CASE_NM
+		   ,A.BS_WKTIME
+		   ,A.DTCODE
+		   ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'position' AND CM_CODE = DTCODE) AS DTCODE_NM
+		   ,A.PTN_CODE
+		   ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'spot' AND CM_CODE = PTN_CODE) AS PTN_CODE_NM
+		   ,A.JCODE
+		   ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'job' AND CM_CODE = JCODE) AS JCODE_NM
+		   ,A.GRD_CODE
+		   ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'hobong' AND CM_CODE = GRD_CODE) AS GRD_CODE_NM
+		   ,A.ENABLED ,A.ST_CLF_CD
+		   ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'tenure' AND CM_CODE = ST_CLF_CD) AS ST_CLF_CD_NM
+		   ,A.EMP_SALARY ,A.PROFILE_FILE_NO
+		   ,A.SIGN_FILE_NO ,A.WORK_METHOD_CODE
+		   ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'workMethod' AND CM_CODE = WORK_METHOD_CODE) AS WORK_METHOD_CODE_NM
+		   
+		   ,B.dnm
+		   
+		FROM EMP A 
+		LEFT JOIN DEPT B ON A.DCODE = B.DCODE 
+	</select>
+	
+	<!-- 전체 사원정보 가져오기2계약정보 포함(우재) -->
+	<select id="empList2" resultMap="empMap" parameterType="String" >
+		SELECT A.EMP_NO,A.EMP_NM ,A.EMP_PASS ,A.GEN_CODE
+		   ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'gender' AND CM_CODE = GEN_CODE) AS GEN_CODE_NM
+		   ,A.EMP_MAIL ,A.EMP_ADDR1 ,A.EMP_ADDR2 ,A.EMP_ADDR3 ,A.EMP_BRDT ,A.REGN
+		   ,A.CP_NO,A.OFC_NO ,A.EMP_IMG ,A.BANK_CODE ,A.ACCT_NO
+		   ,A.OWNER,A.ENT_DATE ,A.OUT_DATE ,A.EMP_MM ,A.CTRT_CASE_CODE
+		   ,(SELECT C.CM_NM FROM CMCODE C WHERE C.CM_GROUP = 'contract' AND C.CM_CODE = A.CTRT_CASE_CODE) AS CTRT_CASE_NM
+		   ,A.ACENTER ,A.DCODE
+		   ,A.ENT_CASE_CODE
+		   ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'join' AND CM_CODE = ENT_CASE_CODE) AS ENT_CASE_NM
+		   ,A.BS_WKTIME
+		   ,A.DTCODE
+		   ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'position' AND CM_CODE = DTCODE) AS DTCODE_NM
+		   ,A.PTN_CODE
+		   ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'spot' AND CM_CODE = PTN_CODE) AS PTN_CODE_NM
+		   ,A.JCODE
+		   ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'job' AND CM_CODE = JCODE) AS JCODE_NM
+		   ,A.GRD_CODE
+		   ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'hobong' AND CM_CODE = GRD_CODE) AS GRD_CODE_NM
+		   ,A.ENABLED ,A.ST_CLF_CD
+		   ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'tenure' AND CM_CODE = ST_CLF_CD) AS ST_CLF_CD_NM
+		   ,A.EMP_SALARY ,A.PROFILE_FILE_NO
+		   ,A.SIGN_FILE_NO ,A.WORK_METHOD_CODE
+		   ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'workMethod' AND CM_CODE = WORK_METHOD_CODE) AS WORK_METHOD_CODE_NM
+		   
+		   ,B.BLCT_SDATE
+		   ,B.BLCT_EDATE
+		   ,B.BWCT_SDATE
+		   ,B.BWCT_EDATE
+		   ,B.PR_SDATE
+		   ,B.PR_EDATE
+		   
+		FROM EMP A 
+		LEFT JOIN CNTHX B ON A.EMP_NO = B.EMP_NO 
+	</select>
+		
+	<!-- 사원추가 메뉴목록 가져오기(우재) -->
+	<select id="selectDept" resultMap="deptMap" parameterType="String" >
+		SELECT *
+		FROM DEPT
+	
+	</select>
+	
+	<!-- 사원추가 메뉴목록 가져오기(우재) -->
+	<select id="selectCmcode" resultMap="cmCodeMap" parameterType="String" >
+		SELECT *
+		FROM CMCODE
+	
+	</select>
+	
+	
+	<!-- 사원추가하기 emp(우재) -->
+	<insert id="insertEMP" parameterType="EmpVO">
+				insert into EMP(EMP_NO,EMP_NM,EMP_PASS,GEN_CODE,EMP_MAIL
+				,EMP_ADDR1,EMP_ADDR2,EMP_ADDR3,EMP_BRDT,REGN,CP_NO
+				,OFC_NO,EMP_IMG,BANK_CODE,ACCT_NO,OWNER,ENT_DATE
+				,OUT_DATE,EMP_MM,CTRT_CASE_CODE,ENT_CASE_CODE,BS_WKTIME,DTCODE
+				,PTN_CODE,JCODE,GRD_CODE,ENABLED,ST_CLF_CD,EMP_SALARY
+				,PROFILE_FILE_NO,SIGN_FILE_NO,WORK_METHOD_CODE,DCODE,ACENTER)
+				
+				values(#{empNo},#{empNm},#{empPass},#{genCode},#{empMail}
+				,#{empAddr1},#{empAddr2},#{empAddr3},#{empBrdt},#{regn},#{cpNo}
+				,#{ofcNo},#{empImg},#{bankCode},#{acctNo},#{owner},#{entDate}
+				,#{outDate},#{empMm},#{ctrtCaseCode},#{entCaseCode},#{bsWktime},#{dtcode}
+				,#{ptnCode},#{jcode},#{grdCode},#{enabled},#{stClfCd},#{empSalary}
+				,#{profileFileNo},#{signFileNo},#{workMethodCode},#{dcode},#{acenter})
+	</insert>
+	
+	<!-- 사원추가하기cnthx(계약변경이력정보)(우재)  -->
+	<insert id="insertCnthx" parameterType="CnthxVO">
+				insert into CNTHX(CNTHX_NO,EMP_NO,CNT_WRITER,BLCT_SDATE,BLCT_EDATE
+				,CTRT_CASE_CODE,BWCT_SDATE,BWCT_EDATE,BCNT_AMT,BFEX,BINC_CLF,CNG_DATE,CNG_MM
+				,PR_SDATE,PR_EDATE,CNT_EDITOR,EDIT_DATE,DELYN)
+				
+				values(#{cnthxNo},#{empNo},#{cntWriter},#{blctSdate},#{blctEdate}
+				,#{ctrtCaseCode},#{bwctSdate},#{bwctEdate},#{bcntAmt},#{bfex},#{bincClf}
+				,#{cngDate},#{cngMm},#{prSdate},#{prEdate},#{cntEditor},#{editDate}
+				,#{delyn})
+	</insert>
+	
+	<!-- 사원리스트추가하기(엑셀데이터 다중 인설트)(우재) -->
+	<update id="insertEmpList" parameterType="java.util.List"> 
+		<foreach collection="list" item="empVO" open="INSERT ALL" close="SELECT * FROM DUAL" separator=" "> 
+		INTO EMP(
+		EMP_NM, ST_CLF_CD, EMP_NO, EMP_PASS, ENT_CASE_CODE
+		, PTN_CODE, EMP_MAIL, GEN_CODE, ENT_DATE,CP_NO
+		, EMP_ADDR1, EMP_ADDR2, EMP_ADDR3, REGN, ACCT_NO
+		, JCODE, GRD_CODE, DCODE, DTCODE, CTRT_CASE_CODE
+		, BANK_CODE
+		) 
+		VALUES(
+		#{empVO.empNm}, #{empVO.stClfCd}, #{empVO.empNo}, #{empVO.empPass}, #{empVO.entCaseCode}
+		, #{empVO.ptnCode}, #{empVO.empMail}, #{empVO.genCode}, sysdate, #{empVO.cpNo}
+		, #{empVO.empAddr1}, #{empVO.empAddr2}, #{empVO.empAddr3}, #{empVO.regn}, #{empVO.acctNo}
+		, #{empVO.jcode}, #{empVO.grdCode}, #{empVO.dcode}, #{empVO.dtcode}, #{empVO.ctrtCaseCode}
+		, #{empVO.bankCode}
+		) 
+		</foreach> 
+	</update>
+	
+	<!-- 사원리스트추가하기(엑셀데이터 다중 인설트,cnthx)(우재) -->
+	<update id="insertCnthxList" parameterType="java.util.List"> 
+		<foreach collection="list" item="cnthxVO" open="INSERT ALL" close="SELECT * FROM DUAL" separator=" " index="idx"> 
+		INTO CNTHX(
+		CNTHX_NO, EMP_NO, BLCT_SDATE, BLCT_EDATE, CTRT_CASE_CODE, BWCT_SDATE, BWCT_EDATE, BCNT_AMT
+		, PR_SDATE, PR_EDATE, CTRT_CASE_CODE
+		) 
+		VALUES(
+		(SELECT NVL(MAX(CNTHX_NO),0)+1 FROM CNTHX)+#{idx}, #{cnthxVO.empNo}, #{cnthxVO.blctSdate}, #{cnthxVO.blctEdate}, #{cnthxVO.ctrtCaseCode}, #{cnthxVO.bwctSdate}
+		, #{cnthxVO.bwctEdate}, #{cnthxVO.bcntAmt}, #{cnthxVO.prSdate}, #{cnthxVO.prEdate}
+		, #{cnthxVO.ctrtCaseCode}
+		) 
+		</foreach> 
+	</update>
+	
+	<!-- 사원리스트추가하기(엑셀데이터 다중 인설트,author)(우재) -->
+	<update id="insertAuthorAlwncVOList" parameterType="java.util.List"> 
+		<foreach collection="list" item="authorAlwncVO" open="INSERT ALL" close="SELECT * FROM DUAL" separator=" "> 
+		INTO AUTHOR_ALWNC(
+		AUTHRT_ID, EMP_NO) 
+		VALUES(
+		#{authorAlwncVO.authrtId}, #{authorAlwncVO.empNo}) 
+		</foreach> 
+	</update>
+	
+	<!-- 사원리스트추가하기(엑셀데이터 다중 인설트,asmgt)(우재) -->
+	<update id="insertAsgmtVOList" parameterType="java.util.List"> 
+		<foreach collection="list" item="asgmtVO" open="INSERT ALL" close="SELECT * FROM DUAL" separator=" " index="idx"> 
+		INTO ASGMT(
+		ASGMT_NO, ASGMT_PERS, WRITER, ASGMT_CLF, ASGMT_RSN, ASGMT_MM
+		, ASGMT_CCST, FWR_DATE, LWR_DATE, DCODE, DTCODE, PTN_CODE
+		, GRD_CODE, JCODE
+		) 
+		VALUES(
+		(SELECT NVL(MAX(ASGMT_NO),0)+1 FROM ASGMT)+#{idx}, #{asgmtVO.asgmtPers}
+		, #{asgmtVO.writer}, #{asgmtVO.asgmtClf}, #{asgmtVO.asgmtRsn}, #{asgmtVO.asgmtMm}
+		, #{asgmtVO.asgmtCcst}, sysdate, sysdate, #{asgmtVO.dcode}, #{asgmtVO.dtcode}
+		, #{asgmtVO.ptnCode}, #{asgmtVO.grdCode}, #{asgmtVO.jcode}
+		) 
+		</foreach> 
+	</update>
+	
+	<!-- 사원리스트추가하기(엑셀데이터 다중 인설트,acca)(우재) -->
+	<update id="insertAccaVOList" parameterType="java.util.List"> 
+		<foreach collection="list" item="accaVO" open="INSERT ALL" close="SELECT * FROM DUAL" separator=" "> 
+		INTO ACCA(
+		EMP_NO, AC_NM, AC_ETDATE, AC_EDATE, GRAD_CLF, MAJ
+		) 
+		VALUES(
+		#{accaVO.empNo}, #{accaVO.acNm}, #{accaVO.acEtdate}, #{accaVO.acEdate}
+		, #{accaVO.gradClf}, #{accaVO.maj}
+		) 
+		</foreach> 
+	</update>
+	
+	<!-- 사원리스트추가하기(엑셀데이터 다중 인설트,career)(우재) -->
+	<update id="insertCareerVOList" parameterType="java.util.List"> 
+		<foreach collection="list" item="careerVO" open="INSERT ALL" close="SELECT * FROM DUAL" separator=" " index="idx"> 
+		INTO CAREER(
+		CA_NO, EMP_NO, CA_NM, CA_CNTCASE, CA_ETDATE, CA_EDATE
+		, CA_DEPT, CA_JOB, CA_DUTY, CA_GRD
+		) 
+		VALUES(
+		(SELECT NVL(MAX(CA_NO),0)+1 FROM CAREER)+#{idx}, #{careerVO.empNo}
+		, #{careerVO.caNm}, #{careerVO.caCntcase}, #{careerVO.caEtdate}, #{careerVO.caEdate}
+		, #{careerVO.caDept}, #{careerVO.caJob}, #{careerVO.caDuty}, #{careerVO.caGrd}
+		) 
+		</foreach> 
+	</update>
+	
+	
+	
+	
+
+		<!-- 파일 정보 INSERT -->
+	<insert id="insertFileInfo" parameterType="fileInfoVO">
+		<selectKey resultType="int" order="BEFORE" keyProperty="fileSn">
+			SELECT NVL(MAX(FILE_SN),0) + 1 FROM FILE_INFO WHERE FILE_UDTER = #{fileUdter}
+		</selectKey>
+		INSERT INTO FILE_INFO(
+		    FILE_SN, ORFI_NAME, SVFI_NAME, FILE_SIZE,  
+		    SV_DATE, FILE_UDTER, FILE_ROOT, FILE_SETTING 
+		)VALUES(
+			#{fileSn},#{orfiName},#{svfiName},#{fileSize},sysdate,#{fileUdter},#{fileRoot},#{fileSetting}
+		)
+	</insert>
+	
+	<!-- 로그인 계정INSERT -->
+	<insert id="insertAuthorAlwnc" parameterType="authorAlwncVO">
+			INSERT INTO AUTHOR_ALWNC (AUTHRT_ID, EMP_NO) VALUES(#{authrtId},#{empNo})
+	</insert>
+	
+	
+	
+	<insert id="insertAuth" parameterType="AuthVO">
+				insert into authorities (authrtId, empNo) values(#{AUTHRT_ID},#{EMP_NO})
+	</insert>
+	
+	<!-- 근로만료계약정보cnthx(우재) -->
+    <select id="eDateEmp" resultType="CnthxVO">
+        SELECT * FROM CNTHX
+        WHERE BLCT_EDATE BETWEEN #{startDate} AND #{endDate}
+        
+	<!-- 임금만료계약정보cnthx(우재) -->
+    </select>
+    <select id="eDateEmp1" resultType="CnthxVO">
+        SELECT * FROM CNTHX
+        WHERE BWCT_EDATE BETWEEN #{startDate} AND #{endDate}
+    </select>
+	
+	<!-- 수습중인 사원검색cnthx(우재) -->
+	<select id="eDateEmp2" resultType="CnthxVO">
+	    SELECT *
+	    FROM CNTHX
+	    WHERE #{currentDate} BETWEEN PR_SDATE AND PR_EDATE
+	</select>
+
+
+	<!-- 부서정보(본부정보) 가져오기 -->
+	<select id="Acenter" resultType="DeptVO" >
+		select * from dept
+		where LENGTH(dcode) = 1
+		ORDER BY dcode
+	</select>
+	
+	<!-- 부서정보(부서정보) 가져오기 -->
+	<select id="Adept" resultType="DeptVO" parameterType="String">
+		select * from dept
+		where  dcode like ${Anum} || '_'
+	</select>
+	<!-- 부서정보(팀정보) 가져오기 -->
+	<select id="Ateam" resultType="DeptVO" parameterType="String">
+		select * from dept
+		where  dcode like ${Anum2} || '_'
+	</select>
+	
+	
+	<!-- 인사발령 대기상태 인설트  List<AsgmtVO> assignmentList-->
+	<update id="asgmtInsert" parameterType="java.util.List">
+		
+	
+	<foreach collection="list" item="asgmtVO" open="INSERT ALL" close="SELECT * FROM DUAL" separator=" " index="idx">
+			
+			INTO ASGMT(
+			ASGMT_NO, ASGMT_PERS, WRITER, ASGMT_CLF, ASGMT_RSN,
+			ASGMT_MM, ASGMT_DATE, FWR_DATE, LWR_DATE, ASGMT_CCST,
+			DTCODE, PTN_CODE, JCODE, GRD_CODE, dcode)
+			
+			
+			 VALUES(
+			 (SELECT NVL(MAX(ASGMT_NO),0)+1 FROM ASGMT)+#{idx}, #{asgmtVO.asgmtPers} , #{asgmtVO.writer}, #{asgmtVO.asgmtClf}, #{asgmtVO.asgmtRsn}
+			 ,#{asgmtVO.asgmtMm}, #{asgmtVO.asgmtDate}, sysdate, #{asgmtVO.lwrDate}, #{asgmtVO.asgmtCcst},
+			 (select cm_code from cmcode where cm_nm = #{asgmtVO.dtcode} ) 
+			 , #{asgmtVO.ptnCode} , 
+			  (select cm_code from cmcode where cm_nm = #{asgmtVO.jcode} ), 
+			 #{asgmtVO.grdCode}, #{asgmtVO.dcode} )
+		</foreach>
+	</update>
+	
+	<!-- 인사발령 목록 리스트 -->
+	<select id="asgmtlist" resultType="AsgmtVO" >
+	SELECT 
+    WRITER,
+    ASGMT_CLF,
+    TO_CHAR(MAX(FWR_DATE), 'YYYY-MM-DD HH24:MI:SS') AS FWR_DATE,
+    ASGMT_CCST,
+    TO_CHAR(MAX(lwr_Date), 'YYYY-MM-DD HH24:MI:SS') AS lwr_Date,
+    COUNT(*) AS PERSON_COUNT
+	FROM asgmt
+	GROUP BY WRITER, ASGMT_CLF, FWR_DATE, ASGMT_CCST, lwr_Date, FWR_DATE
+    order by FWR_DATE DESC,lwr_Date DESC
+	</select>
+	
+	<!-- 완료 -->
+	<select id="asgmtDetail" resultType="AsgmtVO" parameterType="AsgmtVO">
+		<![CDATA[
+		SELECT T.ASGMT_NO, T.ASGMT_PERS, T.WRITER, T.ASGMT_CLF, T.ASGMT_RSN,
+		        T.ASGMT_MM, T.ASGMT_DATE, T.FWR_DATE, T.LWR_DATE, T.ASGMT_CCST
+		        , T.DTCODE, T.PTN_CODE, T.JCODE , t.emp_img
+		        , T.GRD_CODE, T.DCODE
+		        , T.ACENTER, T.BCENTER, T.CCENTER
+		        , T.empVO_empNo "empVO.empNo", T.empVO_empNm "empVO.empNm"        
+		        , U.L_GRDCODE "empVO.grdCode", U.L_JCODE "empVO.jcode"
+		        , T.empVO_dcode "empVO.dcode", U.L_DTCODE "empVO.dtcode", U.L_PTNCODE "empVO.ptnCode"
+		        , U.L_ACENTER "empVO.ACENTER" 
+		        , U.L_BCENTER "empVO.BCENTER"
+		        , U.L_CCENTER "empVO.CCENTER"
+		          
+		FROM
+		(
+			WITH V AS(
+		    SELECT B.ASGMT_NO, B.ASGMT_PERS, B.WRITER, B.ASGMT_CLF, B.ASGMT_RSN,
+		        B.ASGMT_MM, B.ASGMT_DATE, B.FWR_DATE, B.LWR_DATE, B.ASGMT_CCST,B.DCODE	   
+		        , a.emp_no empVO_empNo, a.emp_nm empVO_empNm , a.emp_img as emp_img
+		        , FN_GET_CM_NM(a.dcode) empVO_dcode,		        
+		        FN_GET_DNM(SUBSTR(B.DCODE,1,1) ) ACENTER,
+		        FN_GET_DNM(CASE WHEN SUBSTR(B.DCODE,2,1) IS NULL THEN NULL ELSE SUBSTR(B.DCODE,1,2) END) BCENTER,
+		        FN_GET_DNM(CASE WHEN SUBSTR(B.DCODE,3,1) IS NULL THEN NULL ELSE SUBSTR(B.DCODE,1,3) END) CCENTER,
+		        FN_GET_CM_NM(B.JCODE) JCODE,
+		        FN_GET_CM_NM(B.DTCODE) DTCODE,
+		        FN_GET_CM_NM(B.PTN_CODE) PTN_CODE,
+		        FN_GET_CM_NM(B.GRD_CODE) GRD_CODE    		        
+		        FROM EMP A,  asgmt B
+		        WHERE   WRITER = #{writer}
+		        AND b.asgmt_clf = #{asgmtClf}
+		        AND TO_CHAR(B.FWR_DATE, 'YYYY-MM-DD HH24:MI:SS') = #{fwrDate}
+		        AND B.ASGMT_CCST = #{asgmtCcst}
+		        AND (TO_CHAR(B.LWR_DATE, 'YYYY-MM-DD HH24:MI:SS') = #{lwrDate} OR B.LWR_DATE IS NULL)
+		        and a.emp_no = b.asgmt_pers
+		      )
+	        SELECT * FROM V
+		) T,
+		(
+		     WITH X AS(
+		        SELECT B.ASGMT_NO,
+		            b.asgmt_pers,
+		           fn_get_dnm(substr(b.dcode, 1, 1)) AS l_acenter,
+		            fn_get_dnm(
+		                CASE
+		                    WHEN substr(b.dcode, 2, 1) IS NULL THEN
+		                        NULL
+		                    ELSE
+		                        substr(b.dcode, 1, 2)
+		                END
+		            )                                     AS l_bcenter,
+		            fn_get_dnm(
+		                CASE
+		                    WHEN substr(b.dcode, 3, 1) IS NULL THEN
+		                        NULL
+		                    ELSE
+		                        substr(b.dcode, 1, 3)
+		                END
+		            )                                     AS l_ccenter,
+		            fn_get_cm_nm(b.jcode)             l_jcode,
+		            fn_get_cm_nm(b.dtcode)            l_dtcode,
+		            fn_get_cm_nm(b.ptn_code)          l_ptncode,
+		            fn_get_cm_nm(b.grd_code)          l_grdcode
+		        FROM
+		            emp   a,
+		            asgmt b
+		        WHERE
+		                 to_char(b.fwr_date, 'YYYY-MM-DD HH24:MI:SS') < #{fwrDate}
+		            AND b.asgmt_ccst = #{asgmtCcst}
+		            AND a.emp_no = b.asgmt_pers
+		        )
+		        SELECT * FROM X WHERE X.ASGMT_NO = (
+		                    SELECT MAX(Y.ASGMT_NO)
+		                    FROM   ASGMT Y
+		                    WHERE  Y.ASGMT_PERS = X.ASGMT_PERS AND to_char(Y.fwr_date, 'YYYY-MM-DD HH24:MI:SS') < #{fwrDate}
+		                )
+		) U
+		WHERE T.ASGMT_PERS = U.ASGMT_PERS(+)
+		]]>
+<!--  	SELECT -->
+<!-- 		    B.ASGMT_NO, B.ASGMT_PERS, B.WRITER, B.ASGMT_CLF, B.ASGMT_RSN, -->
+<!-- 		    B.ASGMT_MM, B.ASGMT_DATE, B.FWR_DATE, B.LWR_DATE, B.ASGMT_CCST, -->
+<!-- 		    FN_GET_CM_NM(B.DTCODE) DTCODE, FN_GET_CM_NM(B.PTN_CODE) PTN_CODE, FN_GET_CM_NM(B.JCODE) JCODE, -->
+<!-- 		     FN_GET_CM_NM(B.GRD_CODE) GRD_CODE, B.DCODE, 	      -->
+<!-- 	   FN_GET_DNM(SUBSTR(B.DCODE,1,1) ) ACENTER -->
+<!--      , FN_GET_DNM(CASE WHEN SUBSTR(B.DCODE,2,1) IS NULL THEN NULL ELSE SUBSTR(B.DCODE,1,2) END) BCENTER -->
+<!--      , FN_GET_DNM(CASE WHEN SUBSTR(B.DCODE,3,1) IS NULL THEN NULL ELSE SUBSTR(B.DCODE,1,3) END) CCENTER -->
+     
+<!--      , a.emp_no "empVO.empNo", a.emp_nm "empVO.empNm"  -->
+<!--      ,FN_GET_CM_NM(a.grd_code) "empVO.grdCode", FN_GET_CM_NM(a.jcode) "empVO.jcode" -->
+<!--      , FN_GET_CM_NM(a.dcode) "empVO.dcode", FN_GET_CM_NM(a.dtcode) "empVO.dtcode", FN_GET_CM_NM(a.ptn_code) "empVO.ptnCode" -->
+    
+    
+<!--     ,FN_GET_DNM(SUBSTR(a.dcode, 1, 1)) AS "empVO.ACENTER", -->
+<!--     FN_GET_DNM(CASE WHEN SUBSTR(a.dcode, 2, 1) IS NULL THEN NULL ELSE SUBSTR(a.dcode, 1, 2) END) AS "empVO.BCENTER", -->
+<!--     FN_GET_DNM(CASE WHEN SUBSTR(a.dcode, 3, 1) IS NULL THEN NULL ELSE SUBSTR(a.dcode, 1, 3) END) AS "empVO.CCENTER" -->
+    
+     
+<!-- 		FROM EMP A,  asgmt B -->
+<!-- 		WHERE WRITER = #{writer} -->
+<!--             AND b.asgmt_clf = #{asgmtClf} -->
+<!-- 		    AND TO_CHAR(B.FWR_DATE, 'YYYY-MM-DD HH24:MI') = #{fwrDate} -->
+<!-- 		    AND B.ASGMT_CCST = #{asgmtCcst} -->
+<!-- 		    AND (TO_CHAR(B.LWR_DATE, 'YYYY-MM-DD HH24:MI') = #{lwrDate} OR B.LWR_DATE IS NULL) -->
+<!--             and a.emp_no = b.asgmt_pers -->
+            
+	</select>
+	
+	
+
+	
+	<!-- 진행중 -->
+	<select id="asgmtIngCancel" resultType="AsgmtVO" parameterType="AsgmtVO">
+		<![CDATA[
+		SELECT
+    t.asgmt_no,    t.asgmt_pers,    t.writer,    t.asgmt_clf,
+    t.asgmt_rsn,    t.asgmt_mm,    t.asgmt_date,    t.fwr_date,
+    t.lwr_date,    t.asgmt_ccst,    t.dtcode,    t.ptn_code,
+    t.jcode,    t.grd_code,    t.dcode,    t.acenter,
+    t.bcenter,    t.ccenter, t.emp_img,
+    t.empvo_empno "empVO.empNo",    t.empvo_empnm "empVO.empNm",    u.l_grdcode   "empVO.grdCode",    u.l_jcode     "empVO.jcode",
+    t.empvo_dcode "empVO.dcode",    u.l_dtcode    "empVO.dtcode",    u.l_ptncode   "empVO.ptnCode",    u.l_acenter   "empVO.ACENTER",
+    u.l_bcenter   "empVO.BCENTER",    u.l_ccenter   "empVO.CCENTER",
+    fn_get_cm_nm(c.grd_code) "VO.grdCode",
+    fn_get_cm_nm(c.jcode)    "VO.jcode",
+    fn_get_cm_nm(c.dcode)    "VO.dcode",
+    fn_get_cm_nm(c.dtcode)   "VO.dtcode",
+    fn_get_cm_nm(c.ptn_code) "VO.ptnCode",
+    fn_get_dnm(substr(c.dcode, 1, 1)) "VO.ACENTER",
+     fn_get_dnm(CASE  WHEN substr(c.dcode, 2, 1) IS NULL THEN  NULL  ELSE  substr(c.dcode, 1, 2)  END )  "VO.BCENTER",
+         fn_get_dnm( CASE WHEN substr(c.dcode, 3, 1) IS NULL THEN NULL  ELSE substr(c.dcode, 1, 3) END )  "VO.CCENTER"
+    
+    FROM
+    (
+        WITH v AS (
+            SELECT
+                b.asgmt_no,                b.asgmt_pers,                b.writer,                b.asgmt_clf,
+                b.asgmt_rsn,                b.asgmt_mm,                b.asgmt_date,                b.fwr_date,
+                b.lwr_date,                b.asgmt_ccst,                b.dcode,
+                a.emp_no                          empvo_empno, a.emp_img as emp_img,
+                a.emp_nm                          empvo_empnm,
+                fn_get_cm_nm(a.dcode)             empvo_dcode,
+                fn_get_dnm(substr(b.dcode, 1, 1)) acenter,
+                fn_get_dnm(
+                    CASE
+                        WHEN substr(b.dcode, 2, 1) IS NULL THEN
+                            NULL
+                        ELSE
+                            substr(b.dcode, 1, 2)
+                    END
+                )                                 bcenter,
+                fn_get_dnm(
+                    CASE
+                        WHEN substr(b.dcode, 3, 1) IS NULL THEN
+                            NULL
+                        ELSE
+                            substr(b.dcode, 1, 3)
+                    END
+                )                                 ccenter,
+                fn_get_cm_nm(b.jcode)             jcode,
+                fn_get_cm_nm(b.dtcode)            dtcode,
+                fn_get_cm_nm(b.ptn_code)          ptn_code,
+                fn_get_cm_nm(b.grd_code)          grd_code
+            FROM
+                emp   a,
+                asgmt b
+            WHERE
+                    writer = #{writer}
+                AND b.asgmt_clf = #{asgmtClf}
+                AND to_char(b.fwr_date, 'YYYY-MM-DD HH24:MI:SS') = #{fwrDate}
+                AND b.asgmt_ccst = #{asgmtCcst}
+                AND ( to_char(b.lwr_date, 'YYYY-MM-DD HH24:MI:SS') = #{lwrDate}
+                      OR b.lwr_date IS NULL )
+                AND a.emp_no = b.asgmt_pers
+        )
+        SELECT
+            *
+        FROM
+            v
+    ) t
+    LEFT JOIN
+    (
+        WITH x AS (
+            SELECT
+                b.asgmt_no,
+                b.asgmt_pers,
+                fn_get_dnm(substr(b.dcode, 1, 1)) AS l_acenter,
+                fn_get_dnm(
+                    CASE
+                        WHEN substr(b.dcode, 2, 1) IS NULL THEN
+                            NULL
+                        ELSE
+                            substr(b.dcode, 1, 2)
+                    END
+                )                                 AS l_bcenter,
+                fn_get_dnm(
+                    CASE
+                        WHEN substr(b.dcode, 3, 1) IS NULL THEN
+                            NULL
+                        ELSE
+                            substr(b.dcode, 1, 3)
+                    END
+                )                                 AS l_ccenter,
+                fn_get_cm_nm(b.jcode)             l_jcode,
+                fn_get_cm_nm(b.dtcode)            l_dtcode,
+                fn_get_cm_nm(b.ptn_code)          l_ptncode,
+                fn_get_cm_nm(b.grd_code)          l_grdcode
+            FROM
+                emp   a,
+                asgmt b
+            WHERE
+                to_char(b.fwr_date, 'YYYY-MM-DD HH24:MI:SS') < #{fwrDate}
+                AND b.asgmt_ccst = 'C0102'
+                AND a.emp_no = b.asgmt_pers
+        )
+        SELECT
+            *
+        FROM
+            x
+        WHERE
+            x.asgmt_no = (
+                SELECT
+                    MAX(y.asgmt_no)
+                FROM
+                    asgmt y
+                WHERE
+                    y.asgmt_pers = x.asgmt_pers and y.asgmt_ccst = 'C0102' AND to_char(Y.fwr_date, 'YYYY-MM-DD HH24:MI:SS') < #{fwrDate}
+            )
+    ) u
+ON t.asgmt_pers = u.asgmt_pers
+INNER JOIN
+    emp c
+ON t.asgmt_pers = c.emp_no
+		]]>
+	</select>
+	
+	
+
+
+	<!-- 인사발령 승인 취소 -->	
+	<update id="cancelupdate" parameterType="AsgmtVO">
+			UPDATE ASGMT 
+			SET ASGMT_CCST=#{asgmtCcst}, ASGMT_RSN=#{asgmtRsn}, LWR_DATE=sysdate
+			WHERE ASGMT_PERS=#{asgmtPers} and TO_CHAR(FWR_DATE, 'YYYY-MM-DD HH24:MI:SS')=#{fwrDate}		
+	</update>
+	
+	<!-- 인사발령 승인 -->
+	<update id="ccstUpdate" parameterType="AsgmtVO"> 
+		UPDATE ASGMT
+		SET ASGMT_CCST=#{asgmtCcst}, LWR_DATE=sysdate
+		WHERE ASGMT_PERS=#{asgmtPers} and TO_CHAR(FWR_DATE, 'YYYY-MM-DD HH24:MI:SS')=#{fwrDate}	
+	</update>
+	
+	<!-- 인사발령 승인 -->
+	<update id="sUpdate" parameterType="EmpVO">
+		UPDATE EMP
+		SET DCODE=#{dcode}, GRD_CODE=FN_GET_CM_CODE(#{grdCode}), JCODE=FN_GET_CM_CODE(#{jcode}), PTN_CODE=FN_GET_CM_CODE(#{ptnCode}), DTCODE=FN_GET_CM_CODE(#{dtcode})
+		
+		WHERE EMP_NO=#{empNo}
+	</update>
+	
+	
+	
+	<!-- 부서이름을 부서코드로 전환 -->
+	<select id="deptno" parameterType="String" resultType="int">
+	SELECT dcode from dept 
+	where dnm=#{deptnm}
+	</select>
+	
+	
+	
+	<select id="test" parameterType="string" resultType="AsgmtVO">
+		 select * from asgmt where asgmt_pers = #{asgmtBC} order by fwr_date
+	</select>
+
+	<insert id="newInsert" parameterType="AsgmtVO">
+		INSERT INTO ASGMT (ASGMT_NO, ASGMT_PERS, WRITER, ASGMT_CLF, ASGMT_RSN, 
+						    ASGMT_MM, ASGMT_DATE, FWR_DATE, LWR_DATE, ASGMT_CCST, 
+						    DTCODE, PTN_CODE, JCODE, GRD_CODE, DCODE)
+						    
+					 VALUES((SELECT NVL(MAX(ASGMT_NO),0)+1 FROM ASGMT),#{asgmtPers},#{writer},#{asgmtClf},#{asgmtRsn},
+					 	   #{asgmtMm},#{asgmtDate},sysdate,sysdate,#{asgmtCcst},
+					 	   #{dtcode},#{ptnCode},#{jcode},#{grdCode},#{dcode})
+	</insert>
+	
+	
+	<select id="spotList" resultType="CmCodeVO">
+		select * from cmcode where cm_code like 'A01%' AND cm_code != 'A01'
+	</select>
+	
+	<select id="positionList" resultType="CmCodeVO">
+		select * from cmcode where cm_code like 'A02%' AND cm_code != 'A02'
+	</select>
+	
+	<select id="jobList" resultType="CmCodeVO">
+		select * from cmcode where cm_code like 'A03%' AND cm_code != 'A03'
+	</select>
+	
+	<select id="hobongList" resultType="CmCodeVO">
+		select * from cmcode where cm_code like 'A05%' AND cm_code != 'A05'
+	</select>
+	
+	<select id="memberList2" parameterType="String" resultMap="empMap">
+		select * from emp where dcode like'${team}%'
+	</select>
+	
+	<select id="deptList" parameterType="String" resultType="DeptVO">
+		select * from dept where dcode like '_' and dcode != 0
+	</select>
+	
+	<select id="deptList2" parameterType="String" resultType="DeptVO">
+		select * from dept where dcode like '__' and dcode != 0
+	</select>
+	
+	
+	<select id="authMenu" parameterType="String" resultType="AuthMenuVO">
+		select * from auth_menu
+	</select>
+	
+	
+	<select id="change" parameterType="EmpVO" resultType="EmpVO">
+SELECT ASGMT_NO, ASGMT_PERS as EMPNO,ASGMT_CLF, ASGMT_RSN, ASGMT_DATE, FWR_DATE, LWR_DATE, fn_get_cm_nm(DTCODE) DTCODE, fn_get_cm_nm(PTN_CODE)PTNCODE, fn_get_cm_nm(JCODE)JCODE, fn_get_cm_nm(GRD_CODE)GRDCODE, 
+		        FN_GET_DNM(SUBSTR(DCODE,1,1) ) ACENTER, (select emp_nm from emp where emp_no=#{empNo}) as empnm,
+		        FN_GET_DNM(CASE WHEN SUBSTR(DCODE,2,1) IS NULL THEN NULL ELSE SUBSTR(DCODE,1,2) END) BCENTER,
+		        FN_GET_DNM(CASE WHEN SUBSTR(DCODE,3,1) IS NULL THEN NULL ELSE SUBSTR(DCODE,1,3) END) CCENTER
+FROM (
+  SELECT ASGMT_NO, ASGMT_PERS, WRITER, ASGMT_CLF, ASGMT_RSN, ASGMT_DATE, FWR_DATE, LWR_DATE, ASGMT_CCST, DTCODE, PTN_CODE, JCODE, GRD_CODE, DCODE
+  FROM asgmt
+  WHERE ASGMT_PERS = #{empNo}
+  ORDER BY ASGMT_NO DESC
+)
+WHERE ROWNUM = 1
+	</select>
+	
+	
+</mapper>

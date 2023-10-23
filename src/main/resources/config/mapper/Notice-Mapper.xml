@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.common.mapper.NoticeMapper">
+
+    <select id="notiList" resultType="NoticeVO">
+        SELECT e.emp_nm, e.emp_img, n.*, f.* 
+		FROM EMP e
+		INNER JOIN NOTICE n ON e.EMP_NO = n.wri_no
+		LEFT JOIN FILE_INFO f ON n.FILE_NO = f.FILE_SN
+		ORDER BY n.WRI_DATE DESC
+    </select>
+
+    <insert id="notiInsert" parameterType="NoticeVO">
+        <selectKey keyProperty="postNo" resultType="int" order="BEFORE">
+            SELECT NOTICE_SEQ.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO NOTICE (
+            POST_NO
+          , WRI_NO
+          , POST_CLF
+          , POST_TITLE
+          , POST_CONT
+          , WRI_DATE
+          , FILE_NO
+        )
+        values (
+            #{postNo}
+          , #{wriNo}
+          , #{postClf}
+          , #{postTitle}
+          , #{postCont}
+          , sysdate
+          , #{fileNo}
+        )
+    </insert>
+
+	<!-- 파일 정보 INSERT -->
+	<insert id="fileInsert" parameterType="fileInfoVO">
+		<selectKey resultType="int" order="BEFORE" keyProperty="fileSn">
+			SELECT NVL(MAX(FILE_SN),0) + 1 FROM FILE_INFO WHERE FILE_UDTER = #{fileUdter}
+		</selectKey>
+		INSERT INTO FILE_INFO(
+		    FILE_SN, ORFI_NAME, SVFI_NAME, FILE_SIZE,  
+		    SV_DATE, FILE_UDTER, FILE_ROOT, FILE_SETTING 
+		)VALUES(
+			#{fileSn},#{orfiName},#{svfiName},#{fileSize},sysdate,#{fileUdter},#{fileRoot},#{fileSetting}
+		)
+	</insert>
+	
+	<update id="notiUpdate" parameterType="NoticeVO">
+		UPDATE NOTICE
+		SET POST_TITLE = #{postTitle},
+			POST_CONT  = #{postCont},
+			WRI_DATE   = sysdate,
+			FILE_NO    = #{fileNo}
+		WHERE POST_NO = #{postNo}
+	</update>
+	
+	<delete id="notiDelete" parameterType="NoticeVO">
+		DELETE FROM NOTICE
+		WHERE POST_NO = #{postNo}
+	</delete>
+	
+	<select id="noticeSelect" parameterType="NoticeVO">
+		SELECT n.*, f.*
+		FROM NOTICE n
+		LEFT JOIN FILE_INFO f ON n.FILE_NO = f.FILE_SN
+		WHERE POST_NO = #{postNo}
+	</select>
+	
+</mapper>

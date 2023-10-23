@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.vacation.mapper.CusMainMapper">
+	
+	<resultMap type="VacHoldVO" id="holdMap">
+		<result property="vacTypeNo" column="VAC_TYPE_NO" />
+		<result property="vhGiveDays" column="VH_GIVE_DAYS" />
+		<result property="vhCngNo" column="VH_CNG_NO" />
+		<result property="vhDaycnt" column="VH_DAYCNT" />
+		<result property="empNo" column="EMP_NO" />
+		<result property="vhGiveDate" column="VH_GIVE_DATE" />
+		<result property="vaapDays" column="VAAP_DAYS" />
+		<result property="vacTypeUseDate" column="VAC_TYPE_USE_DATE" />
+	</resultMap>
+	
+
+	<resultMap type="VacTypeVO" id="typeMap">
+		<result property="imgRoot" column="IMG_ROOT" />
+		<result property="vacTypeNo" column="VAC_TYPE_NO" />
+		<result property="vacTypeName" column="VAC_TYPE_NAME" />
+		<result property="vacTypeExp" column="VAC_TYPE_EXP" />
+		<result property="vacTypeUseDate" column="VAC_TYPE_USE_DATE" />
+		<result property="vhInfo" column="VH_INFO" />
+	</resultMap>
+		
+	<resultMap type="VacApplyVO" id="applyMap">
+		<result property="vaapType" column="VAAP_TYPE" />
+		<result property="vhCngNo" column="VH_CNG_NO" />
+		<result property="empNo" column="EMP_NO" />
+		<result property="vacTypeNo" column="VAC_TYPE_NO" />
+		<result property="vaapCode" column="VAAP_CODE" />
+		<result property="vaapEmp" column="VAAP_EMP" />
+		<result property="vaapApEmp" column="VAAP_AP_EMP" />
+		<result property="vaapDays" column="VAAP_DAYS" />
+		<result property="vaapRsn" column="VAAP_RSN" />
+		<result property="vaapApstCode" column="VAAP_APST_CODE" />
+		<result property="vaapApDate" column="VAAP_AP_DATE" />
+		<result property="vaapRtRs" column="VAAP_RT_RS" />
+		<result property="vaapCcSt" column="VAAP_CC_ST" />
+		<result property="vaapCcDate" column="VAAP_CC_DATE" />
+		<result property="vaapStart" column="VAAP_START" />
+		<result property="vaapEnd" column="VAAP_END" />
+		<result property="vacTypeName" column="VAC_TYPE_NAME" />
+		<result property="vhInfo" column="VH_INFO" />
+		<result property="totaldays2" column="TOTALDAYS2" />
+		<result property="vacTypeUseDate" column="VAC_TYPE_USE_DATE" />
+	</resultMap>
+	
+	<!-- 휴가 종류  조회 -->
+	<select id="vacType" parameterType="String"  resultType="VacTypeVO">
+		SELECT
+		    vac_type.VAC_TYPE_NO, 
+		    vac_type.VAC_TYPE_NAME, 
+		    cm.CM_NM AS VAC_TYPE_EXP, 
+		    vac_type.VH_INFO, 
+		    vac_type.vac_type_use_date,
+		    SUM(vh_give_days) - vaap_days AS totalDays, 
+		    vac_type.img_Root
+		FROM
+		    vac_type
+		LEFT JOIN
+		(
+		    SELECT
+		        VH_CNG_NO, VH_DAYCNT, EMP_NO, VH_GIVE_DATE, VAC_TYPE_NO, VH_GIVE_DAYS, VH_FIX_DAYS
+		    FROM
+		        vac_hold vh
+		    WHERE
+		        vh.vac_type_no = '1' AND vh.emp_no = #{empNo} and to_char(vh_give_date,'YYYY') = TO_CHAR(SYSDATE, 'YYYY')
+		) t1
+		ON vac_type.VAC_TYPE_NO = t1.VAC_TYPE_NO
+		LEFT JOIN
+		(
+		    SELECT
+		        emp_no, SUM(vaap_days) AS vaap_days
+		    FROM
+		        vac_apply
+		    GROUP BY
+		        emp_no
+		) t2
+		ON t1.EMP_NO = t2.emp_no
+		LEFT JOIN cmcode cm ON vac_type.VAC_TYPE_EXP = cm.CM_code 
+		GROUP BY
+		    vac_type.VAC_TYPE_NO, vac_type.VAC_TYPE_Name, cm.CM_NM, vac_type.VH_INFO, vac_type.vac_type_use_date, vaap_days, vac_type.img_Root
+		ORDER BY vac_type_no
+	</select>
+	
+	<!-- 휴가 신청 -->
+	<insert id="insertVacApply" parameterType="VacApplyVO" >
+	        INSERT INTO VAC_APPLY (VAAP_CODE,VAAP_EMP, VAAP_DAYS, VAAP_START, VAAP_END, VAAP_TYPE, VAAP_RSN, EMP_NO, VH_CNG_NO, VAC_TYPE_NO, VAAP_DATE ,VAC_TYPE_NAME, VAC_TYPE_USE_DATE,VAAP_APST_CODE)
+	        VALUES (vac_seq.nextval,(select EMP_NM from EMP where EMP_NO = #{empNo}), #{vaapDays} ,#{vaapStart}, #{vaapEnd}, #{vaapType}, #{vaapRsn}, #{empNo}, #{vhCngNo}, #{vacTypeNo}, TO_CHAR(SYSDATE,'yyyy-mm-dd')
+	        ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'vacation' AND CM_OTPT_SN = #{vacTypeNo})
+	        ,(SELECT VAC_TYPE_USE_DATE FROM VAC_TYPE WHERE VAC_TYPE_NO = #{vacTypeNo})
+	        ,'C0104')
+	</insert>
+	
+	<insert id="insertVacApply1" parameterType="VacationFormVO" >
+		<selectKey resultType="int" order="BEFORE" keyProperty="vaapCode">
+			SELECT vac_seq.nextval FROM DUAL
+		</selectKey>
+	        INSERT INTO VAC_APPLY (VAAP_CODE,VAAP_EMP, VAAP_DAYS, VAAP_START, VAAP_END, VAAP_TYPE, VAAP_RSN, EMP_NO, VAC_TYPE_NO, VAAP_DATE ,VAC_TYPE_NAME, VAC_TYPE_USE_DATE,VAAP_APST_CODE,DFT_NO)
+	        VALUES (#{vaapCode},(select EMP_NM from EMP where emp_No = #{empNo}), #{vaapDays} ,#{vaapStart}, #{vaapEnd}, #{vaapType}, #{vaapRsn}, #{empNo}, #{vacTypeNo}, TO_CHAR(SYSDATE,'yyyy-mm-dd')
+	        ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'vacation' AND CM_OTPT_SN = #{vacTypeNo})
+	        ,(SELECT VAC_TYPE_USE_DATE FROM VAC_TYPE WHERE VAC_TYPE_NO = #{vacTypeNo})
+	        ,'C0104',(select DFT_NO from VACATIONFORM WHERE vaap_code = #{vaapCode}))
+	</insert>
+	
+	
+	<!-- 신청된 휴가 내역 조회 -->
+	<select id="selectApplyList" parameterType="String" resultType="VacApplyVO">
+		SELECT va.VAAP_CODE, va.EMP_NO, va.VAC_TYPE_NO, va.VAAP_DAYS, va.VAAP_RSN,
+		       (select CM_NM FROM CMCODE WHERE CM_CODE = VA.VAAP_APST_CODE) VAAP_APST_CODE , va.VAAP_RT_RS, va.VAAP_CC_ST, to_char(va.VAAP_START,'yyyy-mm-dd') AS VAAP_START, to_char(va.VAAP_END,'yyyy-mm-dd') AS VAAP_END, va.VAAP_TYPE,
+		       (SELECT VT.VAC_TYPE_NAME FROM VAC_TYPE VT WHERE VT.VAC_TYPE_NO = VA.VAC_TYPE_NO) VAC_TYPE_NAME,
+		       (SELECT VT.VAC_TYPE_USE_DATE FROM VAC_TYPE VT WHERE VT.VAC_TYPE_NO = VA.VAC_TYPE_NO) VAC_TYPE_USE_DATE
+		FROM vac_apply VA
+		WHERE va.EMP_NO = #{empNo}
+		ORDER BY 1 DESC
+	</select>
+	
+	<!-- 결재승인 후 상태 코드 바꾸기 -->
+	<update id="apstMain2" parameterType="String">
+		UPDATE vac_apply X
+		SET    X.VAAP_APST_CODE = 'C0102'
+		WHERE X.VAAP_CODE IN (
+		            SELECT DISTINCT VA.VAAP_CODE       
+		            FROM vac_apply VA, VACATIONFORM T, apbox A
+		            WHERE T.VAAP_CODE = VA.VAAP_CODE
+		            AND   VA.DFT_NO = A.DFT_NO
+		            AND   A.APB_PRO NOT IN('진행중','반려')
+		            AND   va.EMP_NO = #{empNo}
+		        )
+	</update>
+	<!-- 결재반려 후 상태 코드 바꾸기 -->
+	<update id="apstMain3" parameterType="String">
+		UPDATE vac_apply X
+		SET    X.VAAP_APST_CODE = 'C0103'
+		WHERE X.VAAP_CODE IN (
+		            SELECT DISTINCT VA.VAAP_CODE       
+		            FROM vac_apply VA, VACATIONFORM T, apbox A
+		            WHERE T.VAAP_CODE = VA.VAAP_CODE
+		            AND   VA.DFT_NO = A.DFT_NO
+		            AND   A.APB_PRO NOT IN('진행중','승인')
+		            AND   va.EMP_NO = #{empNo}
+		        )
+	</update>
+
+	<!-- 신청된 휴가 내역에서 모달 속 리스트별 조회 -->
+	<select id="selectOneApply" parameterType="vacApplyVO" resultMap="applyMap">
+	SELECT va.VAAP_CODE, va.EMP_NO, va.VAC_TYPE_NO, va.VAAP_DAYS, va.VAAP_RSN,
+       va.VAAP_APST_CODE, va.VAAP_RT_RS, va.VAAP_CC_ST, to_char(va.VAAP_START,'yyyy-MM-dd') VAAP_START, to_char(va.VAAP_END,'yyyy-MM-dd') VAAP_END, va.VAAP_TYPE,
+       vt.VAC_TYPE_NAME, vt.VH_INFO, vt.VAC_TYPE_USE_DATE ,
+       (select sum(vh_give_days) as days  from VAC_hold where emp_no=#{empNo} and to_char(vh_give_date, 'YYYY') = to_char(sysdate, 'YYYY'))-
+       (select sum(vaap_days) as TOTALDAYS2  FROM vac_apply where emp_no=#{empNo} and to_char(vaap_date, 'YYYY') = to_char(sysdate, 'YYYY')) TOTALDAYS2
+		FROM vac_apply VA
+		INNER JOIN VAC_TYPE vt ON va.VAC_TYPE_NO = vt.VAC_TYPE_NO
+		WHERE va.VAAP_CODE = #{vaapCode}
+        ORDER BY VAAP_CODE DESC 
+	</select>
+	
+	<!-- 신청된 내역 삭제 -->
+	<delete id="deleteApply" parameterType="int">
+		delete from VAC_APPLY where VAAP_CODE = #{vaapCode}
+	</delete>
+	
+	<!-- 신청된 내역 수정 -->
+	<update id="updateApply" parameterType="VacApplyVO" >
+		UPDATE vac_apply
+		SET 
+		    VH_CNG_NO = #{vhCngNo},
+		    VAAP_DAYS = #{vaapDays},
+		    VAAP_RSN = #{vaapRsn},
+		    VAAP_APST_CODE = #{vaapApstCode},
+		    VAAP_START = #{vaapStart},
+		    VAAP_END = #{vaapEnd},
+		    VAAP_TYPE = #{vaapType}
+		WHERE
+		    VAAP_CODE = #{vaapCode}
+	</update>
+	
+	<!-- 연차 상세 조회(부여날짜, 부여 연차일수) -->
+	<select id="DetailAnnual" parameterType="VacHoldVO" resultType="VacHoldVO">
+		select to_char(VH_GIVE_DATE,'yyyy-mm') VH_GIVE_DATE, VH_GIVE_DAYS from vac_hold 
+		where emp_no =#{empNo} and vac_type_No = '1' AND TO_CHAR(VH_GIVE_DATE, 'yyyy') = #{vhGiveDate}
+	</select>
+	
+	<select id="DetailAnnual2" parameterType="VacApplyVO" resultType="VacApplyVO">
+		SELECT TO_CHAR(VAAP_DATE, 'yyyy-mm') AS vaap_date, VAAP_DAYS
+		FROM vac_apply
+		WHERE emp_no = #{empNo} AND vac_type_No = '1' AND TO_CHAR(VAAP_DATE, 'yyyy') = #{vaapDate}
+	</select>
+	
+	
+	<!-- 문서작성테이블에 담긴 DFT_NO 조회 -->
+	<select id ="WriSelect" parameterType="DocWriVO" resultType="int">
+		select max(DFT_NO) from DOC_WRI
+	</select>
+	
+	
+	<!-- 휴가 결재 신청하는데 일단 문서 작성 테이블에 담기-->
+	<insert id="WriInsert" parameterType="DocWriVO">
+		INSERT into DOC_WRI (DFT_NO, EMP_NO, DOC_KIND)
+   		VALUES(#{dftNo}+1,#{empNo},'휴가신청')
+	</insert>
+	
+	<!-- 문서 작성 테이블에 담긴 값을 통해 휴가신청서에 insert -->
+	<insert id="finalApply" parameterType="VacationFormVO">
+		<selectKey resultType="int" order="BEFORE" keyProperty="dftNo">
+			select max(DFT_NO) from DOC_WRI
+		</selectKey>
+	
+		 INSERT INTO VACATIONFORM (
+        DFT_NO, VAAP_EMP, VAAP_DAYS, VAAP_RSN, VAAP_APST_CODE, VAAP_RT_RS, VAAP_CC_ST, 
+        VAAP_START, VAAP_END, VAAP_TYPE, VAC_TYPE_NO, VAAP_DATE, VAAP_CODE
+	    )
+	    VALUES (
+	        #{dftNo}, 
+	        #{vaapEmp}, 
+	        #{vaapDays}, 
+	        #{vaapRsn}, 
+	        #{vaapApstCode}, 
+	        #{vaapRtRs}, 
+	        #{vaapCcSt}, 
+	        #{vaapStart}, 
+	        #{vaapEnd}, 
+	        #{vaapType}, 
+	        #{vacTypeNo},
+	        #{vaapDate},
+	        #{vaapCode}
+	    )
+	    
+	</insert>
+	
+	<!-- 3. VAC_APPLY 테이블의 DFT_NO를 UPDATE -->
+	<update id="insertVacApply2" parameterType="VacationFormVO">
+		UPDATE VAC_APPLY
+		SET    DFT_NO = #{dftNo}
+		WHERE  VAAP_CODE = #{vaapCode}
+	</update>
+	
+	 <!-- 결제선 INSERT -->
+   <insert id="apboxInsert" parameterType="ApboxVO">
+      <selectKey>
+         SELECT NVL(MAX(SERIAL_NUMBER),0)+1 FROM APBOX WHERE DFT_NO = #{dftNo}
+      </selectKey>
+      INSERT INTO APBOX(EMP_NO, DFT_NO, AP_DATE, REJ_RSN, ARB_ST, FIN_AUTH_ST, SERIAL_NUMBER)
+      VALUES(#{empNo},#{dftNo}+1,SYSDATE,#{rejRsn},#{arbSt},#{finAuthSt},#{serialNumber})
+   </insert>
+	
+	<update id="apstCodeUpdate" parameterType="int">
+		update VAC_APPLY set VAAP_APST_CODE = 'C0101' where vaap_code=#{vaapCode}
+	</update>
+	
+	<select id="vaapCodeSelect" resultType="int">
+	select max(vaap_code)+1 from vac_Apply
+	</select>
+	
+	
+<!-- 	결재선에서 승인 반려 진행 상황에 따른 조회 -->
+	<select id="selectDftNo" parameterType="int" resultType="VacApplyVO">
+		select dft_no from vac_apply where vaap_code=#{vaapCode}
+	</select>
+
+	<select id="selectApbox" parameterType="int" resultType="ApboxVO">
+		select ap.EMP_no,ap.dft_no,ap.apb_pro, ap.SERIAL_NUMBER,e.emp_NM, FN_GET_CM_NM(ptn_code) as ptnCode, e.SIGN_FILE_NO, ap.REJ_RSN,
+			(SELECT DISTINCT SVFI_NAME FROM FILE_INFO WHERE FILE_UDTER = e.EMP_NO AND 
+			FILE_SN = (SELECT MAX(FILE_SN) FROM FILE_INFO WHERE FILE_SETTING = 'temp'
+			AND FILE_UDTER = e.EMP_NO))AS SIGN_IMG
+		from apbox ap
+		inner join emp e on ap.emp_no = e.emp_no 
+		where dft_no=#{dftNo}
+	</select>
+</mapper>

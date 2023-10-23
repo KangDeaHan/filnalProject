@@ -1,0 +1,449 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.approval.mapper.ApprovalMapper">
+
+<!-- 비품 -->
+<resultMap type="ApboxVO" id="apboxMap">
+	<result property="empNo"        column="EMP_NO"/>  
+	<result property="apDate"       column="AP_DATE"/>  
+	<result property="dftNo"        column="DFT_NO"/> 
+	<result property="rejRsn"       column="REJ_RSN"/>  
+	<result property="arbSt"        column="ARB_ST"/>  
+	<result property="finAuthSt"    column="FIN_AUTH_ST"/>  
+	<result property="serialNumber" column="SERIAL_NUMBER"/>  
+	<result property="apbPro"       column="APB_PRO"/>  
+	<result property="important"       column="IMPORTANT"/>  
+	<result property="apbImportant"       column="APB_IMPORTANT"/>  
+	
+	<result property="docIndex"        column="DOC_INDEX"/>
+	<result property="subject"         column="SUBJECT"/>
+	<result property="fixName"         column="FIX_NAME"/>
+	<result property="fixStandard"     column="FIX_STANDARD"/>
+	<result property="fixNumber"       column="FIX_NUMBER"/>
+	<result property="fixUnitPrice"    column="FIX_UNIT_PRICE"/>
+	<result property="fixPrice"        column="FIX_PRICE"/>
+	<result property="fixUsage"        column="FIX_USAGE"/>
+	<result property="fixTotal"        column="FIX_TOTAL"/>
+	<result property="applicationDate" column="APPLICATION_DATE"/>
+	
+	<result property="empNm" column="EMP_NM"/>
+	<result property="fempNo" column="FEMP_NO"/>
+	<result property="dockind" column="DOC_KIND"/>
+</resultMap>
+
+<!-- 휴가 -->
+<resultMap type="ApboxVO" id="vacationApboxMap">
+	<result property="dftNo" column="DFT_NO" />
+	<result property="vaapEmp" column="VAAP_EMP" />
+	<result property="vaapDays" column="VAAP_DAYS" />
+	<result property="vaapRsn" column="VAAP_RSN" />
+	<result property="vaapApstCode" column="VAAP_APST_CODE" />
+	<result property="vaapRtRs" column="VAAP_RT_RS" />
+	<result property="vaapCcSt" column="VAAP_CC_ST" />
+	<result property="vaapStart" column="VAAP_START" />
+	<result property="vaapEnd" column="VAAP_END" />
+	<result property="vaapType" column="VAAP_TYPE" />
+	<result property="vacTypeNo" column="VAC_TYPE_NO" />
+	<result property="vacTypeName" column="VAC_TYPE_NAME" />
+	<result property="vaapDate" column="VAAP_DATE" />
+	<result property="applicationDate" column="APPLICATION_DATE" />
+	
+	<result property="serialNumber" column="SERIAL_NUMBER" />
+	<result property="empNo" column="EMP_NO" />
+	<result property="apDate" column="AP_DATE" />
+	<result property="rejRsn" column="REJ_RSN" />
+	<result property="finAuthSt" column="FIN_AUTH_ST" />
+	<result property="arbSt" column="ARB_ST" />
+	<result property="serialNumber" column="SERIAL_NUMBER" />
+	<result property="apbPro" column="APB_PRO" />
+	
+	<result property="dockind" column="DOC_KIND" />
+	<result property="important" column="IMPORTANT" />
+	<result property="fempNo" column="FEMP_NO" />
+	<result property="empNm" column="EMP_NM" />
+</resultMap>
+
+<!-- 근무 -->
+<resultMap type="ApboxVO" id="workApboxMap">
+
+	<result property="dftNo" column="DFT_NO" />
+	<result property="empNo" column="EMP_NO" />
+	<result property="apDate" column="AP_DATE" />
+	<result property="rejRsn" column="REJ_RSN" />
+	<result property="arbSt" column="ARB_ST" />
+	<result property="finAuthSt" column="FIN_AUTH_ST" />
+	<result property="serialNumber" column="SERIAL_NUMBER" />
+	<result property="apbPro" column="APB_PRO" />
+	
+	<result property="waNo" column="WA_NO" />
+	<result property="waAper" column="WA_APER" />
+	<result property="waDate" column="WA_DATE" />
+	<result property="waApdate" column="WA_APDATE" />
+	<result property="waArsn" column="WA_ARSN" />
+	<result property="waStime" column="WA_STIME" />
+	<result property="waEtime" column="WA_ETIME" />
+	<result property="waAllday" column="WA_ALLDAY" />
+	<result property="waExtime" column="WA_EXTIME" />
+	<result property="waNightime" column="WA_NIGHTIME" />
+	<result property="hdtime" column="HDTIME" />
+	<result property="waType" column="WA_TYPE" />
+	<result property="ewApst" column="EW_APST" />
+	<result property="waTltime" column="WA_TLTIME" />
+	<result property="ewAdate" column="EW_ADATE" />
+	<result property="ewRejrsn" column="EW_REJRSN" />
+	<result property="waDel" column="WA_DEL" />
+	<result property="wkColor" column="WK_COLOR" />
+	
+	<result property="empNm" column="EMP_NM" />
+	<result property="important" column="IMPORTANT" />
+	<result property="fempNo" column="FEMP_NO" />
+	<result property="dockind" column="DOC_KIND" />
+</resultMap>
+
+
+<resultMap type="DeptVO" id="deptMap">
+	<result property="dcode" column="DCODE"/>
+	<result property="uprDcode" column="UPR_DCODE"/>
+	<result property="dnm" column="DNM"/>
+	<result property="empNo" column="EMP_NO"/>
+	<result property="dabst" column="DABST"/>
+	<result property="delynCd" column="DELYN_CD"/>
+
+	<result property="deptName" column="DEPT_NAME"/>
+</resultMap>
+
+<!-- 휴직신청 -->
+<resultMap type="ApboxVO" id="myBkList">
+	<result property="bkNo" column="BK_NO" />
+	<result property="empNo" column="EMP_NO" />
+	<result property="bkCode" column="BK_CODE" />
+	<result property="bkSdate" column="BK_SDATE" />
+	<result property="bkEdate" column="BK_EDATE" />
+	<result property="bkRsn" column="BK_RSN" />
+	<result property="bkApstCode" column="BK_APST_CODE" />
+	<result property="fileSetting" column="FILE_SETTING" />
+	<result property="bkCertYn" column="BK_CERT_YN" />
+	<result property="dftNo" column="DFT_NO" />
+	<result property="orfiName" column="ORFI_NAME" />
+	<result property="fileSn" column="FILE_SN" />
+	<result property="bkapDate" column="BKAP_DATE" />
+	<result property="applicationDate" column="APPLICATION_DATE" />
+	
+	<result property="serialNumber" column="SERIAL_NUMBER" />
+	<result property="apDate" column="AP_DATE" />
+	<result property="rejRsn" column="REJ_RSN" />
+	<result property="finAuthSt" column="FIN_AUTH_ST" />
+	<result property="arbSt" column="ARB_ST" />
+	<result property="serialNumber" column="SERIAL_NUMBER" />
+	<result property="apbPro" column="APB_PRO" />
+	
+	<result property="dockind" column="DOC_KIND" />
+	<result property="important" column="IMPORTANT" />
+	<result property="fempNo" column="FEMP_NO" />
+	<result property="empNm" column="EMP_NM" />
+</resultMap>
+
+
+
+	<!-- 조직도 계층형 쿼리 부서-->	
+	<select id="organizationChartOne" resultMap="deptMap">
+		SELECT DCODE, UPR_DCODE, DNM, EMP_NO, DABST, DELYN_CD 
+		FROM   DEPT
+		START WITH UPR_DCODE IS NULL
+		CONNECT BY PRIOR DCODE = UPR_DCODE
+	</select>
+	
+	<!-- 조직도 계층형 쿼리 사원-->	
+	<select id="organizationChartTwo" resultMap="deptMap">
+		SELECT DISTINCT D.DCODE, E.EMP_NM AS DEPT_NAME, E.EMP_NO AS UPR_DCODE
+		FROM DEPT D
+		LEFT JOIN EMP E ON D.DCODE = E.DCODE
+		START WITH D.UPR_DCODE IS NULL
+		CONNECT BY PRIOR D.DCODE = D.UPR_DCODE
+	</select>
+
+	<!-- 문서종류 가져오기 -->
+	<select id="selectDocKind" resultType="DocKindVO" parameterType="String">
+		SELECT DOC_KIND, DOC_DETAIL FROM DOC_KIND WHERE DOC_KIND = #{docKind}
+	</select>
+
+	<!-- 문서작성 INSERT -->
+	<insert id="docInsert" parameterType="DocWriVO">
+		INSERT INTO DOC_WRI(DFT_NO, EMP_NO, DOC_KIND)
+		VALUES(#{dftNo},#{empNo},#{docKind})
+	</insert>
+	
+	<!-- 문서번호 가져오기 -->
+	<select id="docMaxNoSelect" resultType="int">
+		SELECT NVL(MAX(DFT_NO),0) AS DFT_NO  FROM DOC_WRI
+	</select>
+	
+	<!-- 비품신청서 INSERT -->
+	<insert id="fixInsert" parameterType="FixturesVO">
+		<selectKey resultType="int" order="BEFORE" keyProperty="docIndex">
+			SELECT NVL(MAX(DOC_INDEX),0)+1 FROM FIXTURES WHERE DFT_NO = #{dftNo}
+		</selectKey>
+		INSERT INTO FIXTURES(DOC_INDEX, DFT_NO, SUBJECT, FIX_NAME, FIX_STANDARD, FIX_NUMBER, FIX_UNIT_PRICE, FIX_PRICE, FIX_USAGE, FIX_TOTAL, APPLICATION_DATE)
+		VALUES(#{docIndex},#{dftNo},#{subject},#{fixName},#{fixStandard},#{fixNumber},#{fixUnitPrice},#{fixPrice},#{fixUsage},#{fixTotal},SYSDATE)
+	</insert>
+	
+	<!-- 결제선 INSERT -->
+	<insert id="apboxInsert" parameterType="ApboxVO">
+		<selectKey>
+			SELECT NVL(MAX(SERIAL_NUMBER),0)+1 FROM APBOX WHERE DFT_NO = #{dftNo}
+		</selectKey>
+		INSERT INTO APBOX(EMP_NO, DFT_NO, REJ_RSN, ARB_ST, FIN_AUTH_ST, SERIAL_NUMBER)
+		VALUES(#{empNo},#{dftNo},#{rejRsn},#{arbSt},#{finAuthSt},#{serialNumber})
+	</insert>
+	
+	<!-- 내가 할일 비품신청!! -->
+	<select id="myDocList" resultMap="apboxMap" parameterType="String">
+		SELECT  A.DOC_INDEX, A.DFT_NO, A.SUBJECT, A.FIX_NAME, A.FIX_STANDARD, A.FIX_NUMBER, A.FIX_UNIT_PRICE, A.FIX_PRICE, A.FIX_USAGE, A.FIX_TOTAL, TO_CHAR(A.APPLICATION_DATE, 'YYYY-MM-DD HH24:MI:SS') AS APPLICATION_DATE
+		       ,B.EMP_NO,TO_CHAR(B.AP_DATE, 'YYYY-MM-DD HH24:MI:SS') AS AP_DATE, B.REJ_RSN, B.FIN_AUTH_ST, B.ARB_ST, B.FIN_AUTH_ST, B.SERIAL_NUMBER, B.APB_PRO, B.APB_IMPORTANT, B.APB_IMPORTANT
+		       ,C.DOC_KIND,C.IMPORTANT ,C.EMP_NO AS FEMP_NO,(SELECT EMP_NM FROM EMP WHERE EMP_NO = C.EMP_NO) AS EMP_NM
+		       ,FN_BEF_APB_PRO(B.EMP_NO, A.DFT_NO) BEF_APB_PRO
+		FROM FIXTURES A
+		LEFT JOIN APBOX B ON A.DFT_NO = B.DFT_NO
+		LEFT JOIN DOC_WRI C ON C.DFT_NO = A.DFT_NO
+		WHERE B.EMP_NO = #{empNo} AND SERIAL_NUMBER = 1
+		OR (B.EMP_NO = #{empNo} AND B.SERIAL_NUMBER > 1 AND FN_BEF_APB_PRO(B.EMP_NO,A.DFT_NO) = '승인')
+		ORDER BY APPLICATION_DATE DESC
+	</select>
+	
+	<!-- 내가 할일 휴가신청 -->
+	<select id="myVacationDocList" resultMap="vacationApboxMap" parameterType="String">
+		SELECT A.DFT_NO, A.VAAP_EMP, A.VAAP_DAYS, A.VAAP_RSN, A.VAAP_APST_CODE, A.VAAP_RT_RS, A.VAAP_CC_ST, A.VAAP_START, A.VAAP_END, A.VAAP_TYPE, A.VAC_TYPE_NO, (SELECT VAC_TYPE_NAME FROM VAC_TYPE WHERE VAC_TYPE_NO = A.VAC_TYPE_NO)AS VAC_TYPE_NAME, TO_CHAR(A.VAAP_DATE, 'YYYY-MM-DD HH24:MI:SS') AS VAAP_DATE , B.SERIAL_NUMBER
+		      ,B.EMP_NO,TO_CHAR(B.AP_DATE, 'YYYY-MM-DD HH24:MI:SS') AS APPLICATION_DATE, B.REJ_RSN, B.FIN_AUTH_ST, B.ARB_ST, B.SERIAL_NUMBER, B.APB_PRO, B.APB_IMPORTANT
+		      ,C.DOC_KIND,C.IMPORTANT ,C.EMP_NO AS FEMP_NO,(SELECT EMP_NM FROM EMP WHERE EMP_NO = C.EMP_NO) AS EMP_NM
+		FROM VACATIONFORM A
+		LEFT JOIN APBOX B ON A.DFT_NO = B.DFT_NO
+		LEFT JOIN DOC_WRI C ON A.DFT_NO = C.DFT_NO
+		WHERE B.EMP_NO = #{empNo} AND SERIAL_NUMBER = 1
+		OR (B.EMP_NO = #{empNo} AND B.SERIAL_NUMBER > 1 AND FN_BEF_APB_PRO(B.EMP_NO,A.DFT_NO) = '승인')
+		ORDER BY VAAP_DATE DESC
+	</select>
+	
+	<!-- 내가 할일 근무신청 -->
+	<select id="myWorkDocList" resultMap="vacationApboxMap" parameterType="String">
+		SELECT A.WA_NO, A.WA_APER, A.WA_RVER, A.WA_DATE, TO_CHAR(A.WA_APDATE, 'YYYY-MM-DD HH24:MI:SS') AS APPLICATION_DATE,  A.WA_ARSN, A.WA_STIME, A.WA_ETIME, A.WA_ALLDAY, A.WA_EXTIME, A.WA_NIGHTIME, A.HDTIME, A.WA_TYPE, A.EW_APST, A.WA_TLTIME, A.EW_ADATE, A.EW_REJRSN, A.WA_DEL, A.WK_COLOR, A.DFT_NO
+		      ,B.SERIAL_NUMBER ,B.EMP_NO,TO_CHAR(B.AP_DATE, 'YYYY-MM-DD HH24:MI:SS') AS AP_DATE, B.REJ_RSN, B.FIN_AUTH_ST, B.ARB_ST, B.SERIAL_NUMBER, B.APB_PRO , B.APB_IMPORTANT
+		      ,C.DOC_KIND,C.IMPORTANT ,C.EMP_NO AS FEMP_NO,(SELECT EMP_NM FROM EMP WHERE EMP_NO = A.WA_APER) AS EMP_NM
+		FROM WK_AP A
+		LEFT JOIN APBOX B ON A.DFT_NO = B.DFT_NO
+		LEFT JOIN DOC_WRI C ON A.DFT_NO = C.DFT_NO
+		WHERE B.EMP_NO = #{empNo} AND SERIAL_NUMBER = 1
+		OR (B.EMP_NO = #{empNo} AND B.SERIAL_NUMBER > 1 AND FN_BEF_APB_PRO(B.EMP_NO,A.DFT_NO) = '승인')
+	</select>
+	
+	<!-- 내가 할일 휴직신청 -->
+	<select id="myBkList" resultMap="myBkList" parameterType="String">
+		SELECT A.BK_NO, A.EMP_NO, A.BK_CODE,(SELECT BK_NM FROM BK_KIND WHERE BK_CODE = A.BK_CODE )AS BK_NM, A.BK_SDATE, A.BK_EDATE, A.BK_RSN, A.BK_APST_CODE,(SELECT CM_NM FROM CMCODE WHERE CM_CODE=A.BK_APST_CODE )AS BK_APST_NM , A.FILE_SETTING, A.BK_CERT_YN, A.DFT_NO, A.ORFI_NAME, A.FILE_SN, A.BKAP_DATE AS APPLICATION_DATE
+		      ,B.SERIAL_NUMBER ,B.EMP_NO,TO_CHAR(B.AP_DATE, 'YYYY-MM-DD HH24:MI:SS') AS AP_DATE, B.REJ_RSN, B.FIN_AUTH_ST, B.ARB_ST, B.SERIAL_NUMBER, B.APB_PRO
+		      ,C.DOC_KIND,C.IMPORTANT ,C.EMP_NO AS FEMP_NO,(SELECT EMP_NM FROM EMP WHERE EMP_NO = A.EMP_NO) AS EMP_NM
+		FROM BK_APPLY A
+		LEFT JOIN APBOX B ON A.DFT_NO = B.DFT_NO
+		LEFT JOIN DOC_WRI C ON b.DFT_NO = C.DFT_NO
+		WHERE B.EMP_NO = #{empNo} AND SERIAL_NUMBER = 1
+		OR (B.EMP_NO = #{empNo} AND B.SERIAL_NUMBER > 1 AND FN_BEF_APB_PRO(B.EMP_NO,A.DFT_NO) = '승인')
+		ORDER BY BKAP_DATE DESC
+	</select>
+	
+	<!-- 결제문서에 결제 자들-->
+	<select id="deptApboxList" resultType="ApboxVO" parameterType="ApboxVO">
+		SELECT A.EMP_NO,(SELECT EMP_NM FROM EMP E WHERE A.EMP_NO = E.EMP_NO) AS EMP_NM ,A.DFT_NO, A.AP_DATE, A.REJ_RSN, A.ARB_ST, A.FIN_AUTH_ST, A.SERIAL_NUMBER, A.APB_PRO
+		        ,(SELECT DISTINCT SVFI_NAME FROM FILE_INFO WHERE FILE_UDTER = A.EMP_NO AND FILE_SN = (SELECT MAX(FILE_SN) FROM FILE_INFO WHERE FILE_SETTING = 'myimg' AND FILE_UDTER = A.EMP_NO)) AS MY_IMG
+		        ,(SELECT DISTINCT SVFI_NAME FROM FILE_INFO WHERE FILE_UDTER = A.EMP_NO AND FILE_SN = (SELECT MAX(FILE_SN) FROM FILE_INFO WHERE FILE_SETTING = 'temp' AND FILE_UDTER = A.EMP_NO)) AS SIGN_IMG
+		        ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'position' AND CM_CODE = (SELECT DTCODE FROM EMP B WHERE A.EMP_NO = B.EMP_NO)) AS DTCODENM
+		FROM APBOX A
+		WHERE A.DFT_NO = #{dftNo}
+		ORDER BY SERIAL_NUMBER ASC
+	</select>
+	
+	
+	
+	
+	<!-- 결제선 UPDATE -->
+	<update id="updateApbox" parameterType="ApboxVO" >
+		UPDATE APBOX SET AP_DATE=SYSDATE, APB_PRO = #{apbPro}, REJ_RSN = #{rejRsn} WHERE EMP_NO = #{empNo} AND DFT_NO= #{dftNo}
+	</update>
+	
+	<!-- 중요문서 등록 -->
+	<update id="updateImportant" parameterType="ApboxVO">
+		UPDATE APBOX SET APB_IMPORTANT = #{apbImportant} WHERE DFT_NO = #{dftNo} AND EMP_NO = #{empNo}
+	</update>
+	
+	<!-- 알림 INSERT -->
+	<insert id="notificationInsert" parameterType="TbNotificationVO">
+	<selectKey resultType="int" keyProperty="ntcnId" order="BEFORE">
+		SELECT NVL(MAX(NTCN_ID),0)+1 FROM TB_NOTIFICATION
+	</selectKey>
+		INSERT INTO TB_NOTIFICATION(NTCN_ID, NTCN_RCVER_EMP_NO, NTCN_CONTENT, NTCN_URL, NTCN_DT, NTCN_READ_STATUS, NTCN_TITLE ,NTCN_SENDER_EMP_NO, DFT_NO)
+		VALUES(#{ntcnId},#{ntcnRcverEmpNo},#{ntcnContent},#{ntcnUrl},SYSDATE,'N',#{ntcnTitle},#{ntcnSenderEmpNo},#{dftNo})
+	</insert>
+	
+	<!-- 알림 확인 INSERT -->
+	<insert id="notiCheckInsert" parameterType="TbNotiCheckVO">
+		INSERT INTO TB_NOTI_CHECK(EMP_NO, NTCN_ID, CHECK_DATE)
+		VALUES(#{empNo},#{ntcnId},SYSDATE)
+	</insert>
+	
+	<!-- 알림 비품 SELECT -->
+	<select id="fixNotificationSelect" parameterType="TbNotificationVO" resultType="TbNotificationVO">
+		SELECT DISTINCT NTCN_ID, A.NTCN_RCVER_EMP_NO
+      ,(SELECT EMP_NM FROM EMP WHERE EMP_NO = A.NTCN_RCVER_EMP_NO) AS REC_EMP_NM
+      , NTCN_CONTENT , NTCN_URL, NTCN_DT, NTCN_READ_STATUS
+      , A.NTCN_TITLE, A.NTCN_SENDER_EMP_NO
+      ,(SELECT EMP_NM FROM EMP WHERE EMP_NO = A.NTCN_SENDER_EMP_NO ) AS SEND_EMP_NM
+      ,A.DFT_NO, T.APB_PRO
+		FROM TB_NOTIFICATION A
+		LEFT OUTER JOIN (
+		    SELECT  A.DOC_INDEX, A.DFT_NO, A.SUBJECT, A.FIX_NAME, A.FIX_STANDARD, A.FIX_NUMBER
+		           ,A.FIX_UNIT_PRICE, A.FIX_PRICE, A.FIX_USAGE, A.FIX_TOTAL
+		           ,TO_CHAR(A.APPLICATION_DATE, 'YYYY-MM-DD HH24:MI:SS') AS APPLICATION_DATE
+		           ,B.EMP_NO,TO_CHAR(B.AP_DATE, 'YYYY-MM-DD HH24:MI:SS') AS AP_DATE
+		           ,B.REJ_RSN, B.FIN_AUTH_ST, B.ARB_ST, B.SERIAL_NUMBER, B.APB_PRO
+		           ,C.DOC_KIND,C.IMPORTANT ,C.EMP_NO AS FEMP_NO
+		           ,(SELECT EMP_NM FROM EMP WHERE EMP_NO = C.EMP_NO) AS EMP_NM
+		           ,FN_BEF_APB_PRO(B.EMP_NO, A.DFT_NO) AS BEF_APB_PRO
+		FROM FIXTURES A
+		LEFT JOIN APBOX B ON A.DFT_NO = B.DFT_NO
+		LEFT JOIN DOC_WRI C ON C.DFT_NO = A.DFT_NO
+		WHERE (B.EMP_NO = #{empNo} AND SERIAL_NUMBER = 1)
+		    OR (B.EMP_NO = #{empNo} AND B.SERIAL_NUMBER > 1 AND FN_BEF_APB_PRO(B.EMP_NO,A.DFT_NO) = '승인')
+		) T ON A.DFT_NO = T.DFT_NO
+		WHERE A.NTCN_RCVER_EMP_NO = #{empNo} AND A.NTCN_READ_STATUS = 'N' AND T.APB_PRO = '진행중'
+		ORDER BY DFT_NO DESC
+	</select>
+	<!-- 알림 근무 SELECT -->
+	<select id="workNotificationSelect" parameterType="TbNotificationVO" resultType="TbNotificationVO">
+		SELECT 
+	    NTCN_ID, A.NTCN_RCVER_EMP_NO,
+	    (SELECT EMP_NM FROM EMP WHERE EMP_NO = A.NTCN_RCVER_EMP_NO) AS REC_EMP_NM,
+	    NTCN_CONTENT, NTCN_URL, NTCN_DT, NTCN_READ_STATUS,
+	    A.NTCN_TITLE, A.NTCN_SENDER_EMP_NO,
+	    (SELECT EMP_NM FROM EMP WHERE EMP_NO = A.NTCN_SENDER_EMP_NO ) AS SEND_EMP_NM,
+	    A.DFT_NO, T.APB_PRO
+		FROM TB_NOTIFICATION A
+		LEFT OUTER JOIN (
+		    SELECT 
+		        A.WA_NO, A.WA_APER, A.WA_RVER, A.WA_DATE, A.WA_APDATE, A.WA_ARSN, 
+		        A.WA_STIME, A.WA_ETIME, A.WA_ALLDAY, A.WA_EXTIME, A.WA_NIGHTIME, 
+		        A.HDTIME, A.WA_TYPE, A.EW_APST, A.WA_TLTIME, A.EW_ADATE, A.EW_REJRSN, 
+		        A.WA_DEL, A.WK_COLOR, A.DFT_NO,
+		        B.SERIAL_NUMBER, B.EMP_NO, TO_CHAR(B.AP_DATE, 'YYYY-MM-DD HH24:MI:SS') AS AP_DATE, 
+		        B.REJ_RSN, B.FIN_AUTH_ST, B.ARB_ST, B.APB_PRO,
+		        C.DOC_KIND, C.IMPORTANT, C.EMP_NO AS FEMP_NO,
+		        (SELECT EMP_NM FROM EMP WHERE EMP_NO = C.EMP_NO) AS EMP_NM
+		    FROM WK_AP A
+		    LEFT JOIN APBOX B ON A.DFT_NO = B.DFT_NO
+		    LEFT JOIN DOC_WRI C ON A.DFT_NO = C.DFT_NO
+		    WHERE B.EMP_NO = #{empNo} 
+		      AND (SERIAL_NUMBER = 1 
+		           OR (B.EMP_NO = #{empNo} AND B.SERIAL_NUMBER > 1 AND FN_BEF_APB_PRO(B.EMP_NO,A.DFT_NO) = '승인'))
+		) T ON A.DFT_NO = T.DFT_NO
+		WHERE NTCN_RCVER_EMP_NO = #{empNo} AND NTCN_READ_STATUS = 'N' AND T.APB_PRO = '진행중'
+		ORDER BY DFT_NO DESC
+	</select>
+	<!-- 알림 휴가 SELECT -->
+	<select id="vacationNotificationSelect" parameterType="TbNotificationVO" resultType="TbNotificationVO">
+		SELECT NTCN_ID, A.NTCN_RCVER_EMP_NO
+		      ,(SELECT EMP_NM FROM EMP WHERE EMP_NO = A.NTCN_RCVER_EMP_NO) AS REC_EMP_NM, NTCN_CONTENT
+		      , NTCN_URL, NTCN_DT, NTCN_READ_STATUS, A.NTCN_TITLE, A.NTCN_SENDER_EMP_NO
+		      ,(SELECT EMP_NM FROM EMP WHERE EMP_NO = A.NTCN_SENDER_EMP_NO ) AS SEND_EMP_NM
+		      , A.DFT_NO, T.APB_PRO
+		FROM TB_NOTIFICATION A
+		LEFT OUTER JOIN(
+		SELECT A.DFT_NO, A.VAAP_EMP, A.VAAP_DAYS, A.VAAP_RSN, A.VAAP_APST_CODE, A.VAAP_RT_RS, A.VAAP_CC_ST, TO_CHAR(A.VAAP_START, 'YYYY-MM-DD HH24:MI:SS') AS VAAP_START , TO_CHAR(A.VAAP_END,'YYYY-MM-DD HH24:MI:SS')AS VAAP_END, A.VAAP_TYPE, A.VAC_TYPE_NO,(SELECT VAC_TYPE_NAME FROM VAC_TYPE WHERE VAC_TYPE_NO = A.VAC_TYPE_NO)AS VAC_TYPE_NAME, A.VAAP_DATE 
+		      ,B.SERIAL_NUMBER ,B.EMP_NO,TO_CHAR(B.AP_DATE, 'YYYY-MM-DD HH24:MI:SS') AS AP_DATE, B.REJ_RSN, B.FIN_AUTH_ST, B.ARB_ST, B.APB_PRO
+		      ,C.DOC_KIND,C.IMPORTANT ,C.EMP_NO AS FEMP_NO,(SELECT EMP_NM FROM EMP WHERE EMP_NO = C.EMP_NO) AS EMP_NM
+		FROM VACATIONFORM A
+			LEFT JOIN APBOX B ON A.DFT_NO = B.DFT_NO
+			LEFT JOIN DOC_WRI C ON A.DFT_NO = C.DFT_NO
+			WHERE B.EMP_NO = #{empNo} AND SERIAL_NUMBER = 1
+			OR (B.EMP_NO = #{empNo} AND B.SERIAL_NUMBER > 1 AND FN_BEF_APB_PRO(B.EMP_NO,A.DFT_NO) = '승인')
+			) T ON A.DFT_NO = T.DFT_NO
+		WHERE NTCN_RCVER_EMP_NO = #{empNo} AND NTCN_READ_STATUS = 'N' AND T.APB_PRO = '진행중'
+		ORDER BY DFT_NO DESC
+	</select>
+
+
+	<!-- 전알림 select-->	
+	<select id="notificationSelect" parameterType="TbNotificationVO">
+		SELECT NTCN_ID, A.NTCN_RCVER_EMP_NO
+    	  	 ,(SELECT EMP_NM FROM EMP WHERE EMP_NO = A.NTCN_RCVER_EMP_NO) AS REC_EMP_NM, NTCN_CONTENT
+      		 , NTCN_URL, NTCN_DT, NTCN_READ_STATUS, A.NTCN_TITLE, A.NTCN_SENDER_EMP_NO
+      	 	 ,(SELECT EMP_NM FROM EMP WHERE EMP_NO = A.NTCN_SENDER_EMP_NO ) AS SEND_EMP_NM
+      	 	 ,DFT_NO
+		FROM TB_NOTIFICATION A WHERE NTCN_RCVER_EMP_NO = #{ntcnRcverEmpNo} AND NTCN_READ_STATUS = 'N'
+	</select>
+	
+	<!-- 알림UPDATE -->
+	<update id="notificationUpdate" parameterType="TbNotiCheckVO">
+		UPDATE TB_NOTIFICATION SET NTCN_READ_STATUS = 'Y' WHERE NTCN_RCVER_EMP_NO = #{empNo}
+	</update>
+	
+	<!-- 나의 문서 상세정보 비품 SELECT-->
+	<select id="selectDetailInfo" parameterType="ApboxVO" resultMap="apboxMap">
+		SELECT  A.DOC_INDEX, A.DFT_NO, A.SUBJECT, A.FIX_NAME, A.FIX_STANDARD, A.FIX_NUMBER, A.FIX_UNIT_PRICE, A.FIX_PRICE, A.FIX_USAGE, A.FIX_TOTAL, TO_CHAR(A.APPLICATION_DATE, 'YYYY-MM-DD HH24:MI:SS') AS APPLICATION_DATE
+		       ,B.EMP_NO,TO_CHAR(B.AP_DATE, 'YYYY-MM-DD HH24:MI:SS') AS AP_DATE, B.REJ_RSN, B.FIN_AUTH_ST, B.ARB_ST, B.FIN_AUTH_ST, B.SERIAL_NUMBER, B.APB_PRO
+		       ,C.DOC_KIND,C.IMPORTANT ,C.EMP_NO AS FEMP_NO,(SELECT EMP_NM FROM EMP WHERE EMP_NO = C.EMP_NO) AS EMP_NM
+		FROM FIXTURES A
+		LEFT JOIN APBOX B ON A.DFT_NO = B.DFT_NO
+		LEFT JOIN DOC_WRI C ON C.DFT_NO = A.DFT_NO
+		WHERE B.EMP_NO = #{empNo} AND C.DFT_NO = #{dftNo}
+	</select>
+
+	<!-- 나의 문서 상세정보 휴가 SELECT-->
+	<select id="selectDetailVacationInfo" parameterType="ApboxVO" resultMap="vacationApboxMap">
+		SELECT A.DFT_NO, A.VAAP_EMP, A.VAAP_DAYS, A.VAAP_RSN, A.VAAP_APST_CODE, A.VAAP_RT_RS, A.VAAP_CC_ST, TO_CHAR(A.VAAP_START, 'YYYY-MM-DD HH24:MI:SS') AS VAAP_START , TO_CHAR(A.VAAP_END,'YYYY-MM-DD HH24:MI:SS')AS VAAP_END, A.VAAP_TYPE, A.VAC_TYPE_NO,(SELECT VAC_TYPE_NAME FROM VAC_TYPE WHERE VAC_TYPE_NO = A.VAC_TYPE_NO)AS VAC_TYPE_NAME, A.VAAP_DATE AS APPLICATION_DATE
+	       ,B.EMP_NO,TO_CHAR(B.AP_DATE, 'YYYY-MM-DD HH24:MI:SS') AS AP_DATE, B.REJ_RSN, B.FIN_AUTH_ST, B.ARB_ST, B.FIN_AUTH_ST, B.SERIAL_NUMBER, B.APB_PRO
+	       ,C.DOC_KIND,C.IMPORTANT ,C.EMP_NO AS FEMP_NO,(SELECT EMP_NM FROM EMP WHERE EMP_NO = C.EMP_NO) AS EMP_NM
+		FROM VACATIONFORM A
+		LEFT JOIN APBOX B ON A.DFT_NO = B.DFT_NO
+		LEFT JOIN DOC_WRI C ON C.DFT_NO = A.DFT_NO
+		WHERE B.EMP_NO = #{empNo} AND C.DFT_NO = #{dftNo}
+	</select>
+	
+	<!-- 나의 문서 상세정보 근무 SELECT-->
+	<select id="selectDetailWorkInfo" parameterType="ApboxVO" resultMap="workApboxMap">
+		SELECT  A.WA_NO, A.WA_APER, A.WA_RVER, A.WA_DATE, A.WA_APDATE, A.WA_ARSN, A.WA_STIME, A.WA_ETIME, A.WA_ALLDAY, A.WA_EXTIME, A.WA_NIGHTIME, A.HDTIME, A.WA_TYPE, A.EW_APST, A.WA_TLTIME, A.EW_ADATE, A.EW_REJRSN, A.WA_DEL, A.WK_COLOR, A.DFT_NO
+	       ,B.EMP_NO,TO_CHAR(B.AP_DATE, 'YYYY-MM-DD HH24:MI:SS') AS AP_DATE, B.REJ_RSN, B.FIN_AUTH_ST, B.ARB_ST, B.FIN_AUTH_ST, B.SERIAL_NUMBER, B.APB_PRO
+	       ,C.DOC_KIND,C.IMPORTANT ,C.EMP_NO AS FEMP_NO,(SELECT EMP_NM FROM EMP WHERE EMP_NO = C.EMP_NO) AS EMP_NM
+		FROM WK_AP A
+		LEFT JOIN APBOX B ON A.DFT_NO = B.DFT_NO
+		LEFT JOIN DOC_WRI C ON C.DFT_NO = A.DFT_NO
+		WHERE B.EMP_NO = #{empNo} AND C.DFT_NO = #{dftNo}
+	</select>
+	
+	<!-- 내문서 상세정보 SEELCT 휴직신청  -->
+	<select id="selectDetailBkInfo" parameterType="ApboxVO" resultMap="myBkList">
+		SELECT  A.BK_NO, A.EMP_NO, A.BK_CODE,(SELECT BK_NM FROM BK_KIND WHERE BK_CODE = A.BK_CODE )AS BK_NM, A.BK_SDATE, A.BK_EDATE, A.BK_RSN, A.BK_APST_CODE,(SELECT CM_NM FROM CMCODE WHERE CM_CODE=A.BK_APST_CODE )AS BK_APST_NM , A.FILE_SETTING, A.BK_CERT_YN, A.DFT_NO, A.ORFI_NAME, A.FILE_SN, A.BKAP_DATE
+		       ,B.EMP_NO,TO_CHAR(B.AP_DATE, 'YYYY-MM-DD HH24:MI:SS') AS AP_DATE, B.REJ_RSN, B.FIN_AUTH_ST, B.ARB_ST, B.FIN_AUTH_ST, B.SERIAL_NUMBER, B.APB_PRO
+		       ,C.DOC_KIND,C.IMPORTANT ,C.EMP_NO AS FEMP_NO,(SELECT EMP_NM FROM EMP WHERE EMP_NO = C.EMP_NO) AS EMP_NM
+		FROM BK_APPLY A
+		LEFT JOIN APBOX B ON A.DFT_NO = B.DFT_NO
+		LEFT JOIN DOC_WRI C ON C.DFT_NO = A.DFT_NO
+		WHERE B.EMP_NO = #{empNo} AND C.DFT_NO = #{dftNo}
+	</select>
+	
+	<!-- 비품신청 리스트  SELECT-->
+	<select id="selectMyFixList" parameterType="String" resultType="FixturesVO">
+		SELECT A.DOC_INDEX, A.DFT_NO, A.SUBJECT, A.FIX_NAME, A.FIX_STANDARD, A.FIX_NUMBER, A.FIX_UNIT_PRICE, A.FIX_PRICE, A.FIX_USAGE, A.FIX_TOTAL, A.APPLICATION_DATE,
+               B.EMP_NO,(SELECT EMP_NM FROM EMP WHERE EMP_NO = B.EMP_NO) EMP_NM
+		FROM FIXTURES A
+		LEFT OUTER JOIN DOC_WRI B ON A.DFT_NO = B.DFT_NO
+		WHERE B.EMP_NO = #{empNo}
+	</select>
+	
+	<!-- 비품신청 상세정보 -->
+	<select id="selectMyFix" parameterType="ApboxVO" resultMap="vacationApboxMap">
+		SELECT  A.DOC_INDEX, A.DFT_NO, A.SUBJECT, A.FIX_NAME, A.FIX_STANDARD, A.FIX_NUMBER, A.FIX_UNIT_PRICE, A.FIX_PRICE, A.FIX_USAGE, A.FIX_TOTAL, TO_CHAR(A.APPLICATION_DATE, 'YYYY-MM-DD HH24:MI:SS') AS APPLICATION_DATE
+		       ,C.DOC_KIND,C.IMPORTANT ,C.EMP_NO AS FEMP_NO,(SELECT EMP_NM FROM EMP WHERE EMP_NO = C.EMP_NO) AS EMP_NM
+		FROM FIXTURES A
+		LEFT JOIN DOC_WRI C ON C.DFT_NO = A.DFT_NO
+		WHERE C.DFT_NO = #{dftNo} AND C.EMP_NO = #{empNo}
+	
+	</select>
+	
+	
+</mapper>

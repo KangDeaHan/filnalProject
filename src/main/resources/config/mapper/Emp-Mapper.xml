@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.common.mapper.EmpMapper">
+
+	<resultMap type="empVO" id="empMap">
+		<result property="empNo" column="EMP_NO"/>
+		<result property="empNm" column="EMP_NM"/>
+		<result property="empPass" column="EMP_PASS"/>
+		<result property="genCode" column="GEN_CODE"/>
+		<result property="empMail" column="EMP_MAIL"/>
+		<result property="empAddr1" column="EMP_ADDR1"/>
+		<result property="empAddr2" column="EMP_ADDR2"/>
+		<result property="empAddr3" column="EMP_ADDR3"/>
+		<result property="empBrdt" column="EMP_BRDT"/>
+		<result property="regn" column="REGN"/>
+		<result property="cpNo" column="CP_NO"/>
+		<result property="ofcNo" column="OFC_NO"/>
+		<result property="empImg" column="EMP_IMG"/>
+		<result property="bankCode" column="BANK_CODE"/>
+		<result property="acctNo" column="ACCT_NO"/>
+		<result property="owner" column="OWNER"/>
+		<result property="entDate" column="ENT_DATE"/>
+		<result property="outDate" column="OUT_DATE"/>
+		<result property="empMm" column="EMP_MM"/>
+		<result property="ctrtCaseCode" column="CTRT_CASE_CODE"/>
+		<result property="entCaseCode" column="ENT_CASE_CODE"/>
+		<result property="bsWktime" column="BS_WKTIME"/>
+		<result property="dtcode" column="DTCODE"/>
+		<result property="ptnCode" column="PTN_CODE"/>
+		<result property="jcode" column="JCODE"/>
+		<result property="grdCode" column="GRD_CODE"/>
+		<result property="enabled" column="ENABLED"/>
+		<result property="stClfCd" column="ST_CLF_CD"/>
+		<result property="empSalary" column="EMP_SALARY"/>
+		<result property="profileFileNo" column="PROFILE_FILE_NO"/>
+		<result property="signFileNo" column="SIGN_FILE_NO"/>
+		<result property="workMethodCode" column="WORK_METHOD_CODE"/>
+		<result property="dcode" column="DCODE"/>
+		
+		<!-- 코드네임 -->
+		<result property="genCodeNm" column="GEN_CODE_NM"/>
+		<result property="bankCodeNm" column="BANK_CODE_NM"/>
+		<result property="ctrtCaseNm" column="CTRT_CASE_NM"/>
+		<result property="entCaseNm" column="ENT_CASE_NM"/>
+		<result property="dtCodeNm" column="DTCODE_NM"/>
+		<result property="ptnCodeNm" column="PTN_CODE_NM"/>
+		<result property="jcodeNm" column="JCODE_NM"/>
+		<result property="grdCodeNm" column="GRD_CODE_NM"/>
+		<result property="stClfCdNm" column="ST_CLF_CD_NM"/>
+		<result property="workMethodCodeNm" column="WORK_METHOD_CODE_NM"/>
+		
+		<collection property="authList" resultMap="authMap" />
+		
+		<!-- 부서 테이블 -->	
+		<collection property="deptVOList" resultMap="deptMap" />
+		
+		<!-- 계약이력정보 -->
+		<collection property="cnthxVOList" resultMap="cnthxMap" />
+		
+	</resultMap>
+
+	<resultMap type="AuthorAlwncVO" id="authMap">
+		<result property="authrtId" column="AUTHRT_ID" />
+		<result property="empNo" column="EMP_NO" />
+	</resultMap>
+	
+	<!-- 부서 테이블 -->
+	<resultMap type="deptVO" id="deptMap">
+		<result property="dcode" column="DCODE"/>
+		<result property="uprDcode" column="UPR_DCODE"/>
+		<result property="dnm" column="DNM"/>
+		<result property="empNo" column="EMP_NO"/>
+		<result property="dabst" column="DABST"/>
+		<result property="delynCd" column="DELYN_CD"/>
+	</resultMap>
+	
+	
+	<!-- 계약변경이력 테이블 -->
+	<resultMap type="cnthxVO" id="cnthxMap">
+		<result property="cnthxNo" column="CNTHX_NO"/>
+		<result property="empNo" column="EMP_NO"/>
+		<result property="cntWriter" column="CNT_WRITER"/>
+		<result property="blctSdate" column="BLCT_SDATE"/>
+		<result property="blctEdate" column="BLCT_EDATE"/>
+		<result property="ctrtCaseCode" column="CTRT_CASE_CODE"/>
+		<result property="bwctSdate" column="BWCT_SDATE"/>
+		<result property="bwctEdate" column="BWCT_EDATE"/>
+		<result property="bcntAmt" column="BCNT_AMT"/>
+		<result property="bfex" column="BFEX"/>
+		<result property="bincClf" column="BINC_CLF"/>
+		<result property="cngDate" column="CNG_DATE"/>
+		<result property="cngMm" column="CNG_MM"/>
+		<result property="prSdate" column="PR_SDATE"/>
+		<result property="prEdate" column="PR_EDATE"/>
+		<result property="cntEditor" column="CNT_EDITOR"/>
+		<result property="editDate" column="EDIT_DATE"/>
+		<result property="delyn" column="DELYN"/>
+	</resultMap>
+	
+	<!-- 학력 테이블 -->
+	<resultMap type="accaVO" id="accaMap">
+		<result property="empNo" column="EMP_NO"/>
+		<result property="acNm" column="AC_NM"/>
+		<result property="acEtdate" column="AC_ETDATE"/>
+		<result property="acEdate" column="AC_EDATE"/>
+		<result property="gradClf" column="GRAD_CLF"/>
+		<result property="maj" column="MAJ"/>
+	</resultMap>
+	
+	<!-- 경력 테이블 -->
+	<resultMap type="careerVO" id="carrerMap">
+		<result property="caNo" column="CA_NO"/>
+		<result property="empNo" column="EMP_NO"/>
+		<result property="caNm" column="CA_NM"/>
+		<result property="caClf" column="CA_CLF"/>
+		<result property="caCntcase" column="CA_CNTCASE"/>
+		<result property="caEtdate" column="CA_ETDATE"/>
+		<result property="caEdate" column="CA_EDATE"/>
+		<result property="caDept" column="CA_DEPT"/>
+		<result property="caJob" column="CA_JOB"/>
+		<result property="caDuty" column="CA_DUTY"/>
+		<result property="caGrd" column="CA_GRD"/>
+	</resultMap>
+	
+	
+
+	<!-- 사원 + 권한 셀렉트 -->
+	<select id="read" resultMap="empMap" parameterType="string">
+		select A.EMP_NO, A.EMP_NM, A.EMP_PASS, A.GEN_CODE, A.EMP_MAIL
+	       , A.EMP_ADDR1, A.EMP_ADDR2, A.EMP_ADDR3, A.EMP_BRDT, A.REGN
+	       , A.CP_NO, A.OFC_NO, A.EMP_IMG, A.BANK_CODE, A.ACCT_NO
+	       , A.OWNER, A.ENT_DATE, A.OUT_DATE, A.EMP_MM, A.CTRT_CASE_CODE
+	       , A.ENT_CASE_CODE, A.BS_WKTIME, A.DTCODE, A.PTN_CODE, A.JCODE
+	       , A.GRD_CODE, A.ENABLED, A.ST_CLF_CD, A.EMP_SALARY, A.PROFILE_FILE_NO, A.SIGN_FILE_NO
+	       , A.WORK_METHOD_CODE ,A.DCODE
+	       
+	       , B.AUTHRT_ID
+		from EMP A , AUTHOR_ALWNC B 
+		where A.EMP_NO = #{empNo} and A.EMP_NO = B.EMP_NO
+	</select>
+	
+	<!-- 사원 인설트 -->
+	<insert id="insertEmp" parameterType="EmpVO">
+		INSERT INTO EMP(
+			EMP_NO,	EMP_NM,	EMP_PASS, GEN_CODE,
+			EMP_MAIL,EMP_ADDR1,	EMP_ADDR2,EMP_ADDR3,
+			EMP_BRDT,REGN,CP_NO,OFC_NO,EMP_IMG,
+			BANK_CODE,ACCT_NO,OWNER,ENT_DATE,
+			OUT_DATE,EMP_MM,CTRT_CASE_CODE,ENT_CASE_CODE,
+			BS_WKTIME,DTCODE,PTN_CODE,JCODE,
+			GRD_CODE,ENABLED,ST_CLF_CD,	EMP_SALARY,
+			PROFILE_FILE_NO,SIGN_FILE_NO,WORK_METHOD_CODE,DCODE)
+		VALUES(
+			#{empNo},#{empNm},#{empPass},#{genCode},
+			#{empMail},#{empAddr1},#{empAddr2},#{empAddr3},
+			#{empBrdt},#{regn},#{cpNo},#{ofcNo},
+			#{empImg},#{bankCode},#{acctNo},#{owner},
+			#{entDate},#{outDate},#{empMm},#{ctrtCaseCode},
+			#{entCaseCode},#{bsWktime},#{dtcode},#{ptnCode},
+			#{jcode},#{grdCode},#{enabled},#{stClfCd},
+			#{empSalary},#{profileFileNo},#{signFileNo},#{workMethodCode},#{dcode}
+		)
+	</insert>
+
+	<!-- 권한 인설트 -->
+	<insert id="insertAuth" parameterType="AuthorAlwncVO">
+		INSERT INTO AUTHOR_ALWNC(
+			AUTHRT_ID,
+			EMP_NO
+		)VALUES(
+			#{authrtId},
+			#{empNo}
+		)
+	</insert>
+	
+	<!-- 검색 -->
+	<select id="suchEmp" parameterType="String" resultType="EmpVO">
+		SELECT * FROM EMP
+		WHERE 1=1
+		<if test="keyword!=null and keyword!=''">
+		AND(
+		 EMP_NO LIKE '%' ||#{keyword}|| '%' OR 
+		 EMP_NM LIKE '%' ||#{keyword}|| '%'
+		 )
+		</if>
+		ORDER BY EMP_NO DESC
+	</select>
+	
+	<!-- 유저 한명 검색  -->
+	<select id="SelectEmp" parameterType="String" resultMap="empMap">
+		SELECT A.EMP_NO, A.EMP_NM, A.EMP_PASS , A.GEN_CODE 
+		   ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'gender' AND CM_CODE = A.GEN_CODE) AS GEN_CODE_NM
+		   , A.EMP_MAIL , A.EMP_ADDR1, A.EMP_ADDR2, A.EMP_ADDR3, A.EMP_BRDT, A.REGN
+		   , A.CP_NO, A.OFC_NO, A.EMP_IMG, A.BANK_CODE
+		   , (SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'bank' AND CM_CODE = A.BANK_CODE) AS BANK_CODE_NM
+		   , A.ACCT_NO, A.OWNER, A.ENT_DATE, A.OUT_DATE, A.EMP_MM, A.CTRT_CASE_CODE
+		   ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'contract' AND CM_CODE = A.CTRT_CASE_CODE) AS CTRT_CASE_NM
+		   , A.ENT_CASE_CODE
+		   ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'join' AND CM_CODE = A.ENT_CASE_CODE) AS ENT_CASE_NM
+		   , A.BS_WKTIME
+		   , A.DTCODE
+		   ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'position' AND CM_CODE = A.DTCODE) AS DTCODE_NM
+		   , A.PTN_CODE
+		   ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'spot' AND CM_CODE = A.PTN_CODE) AS PTN_CODE_NM
+		   , A.JCODE
+		   ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'job' AND CM_CODE = A.JCODE) AS JCODE_NM
+		   , A.GRD_CODE
+		   ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'year' AND CM_CODE = A.GRD_CODE) AS GRD_CODE_NM
+		   , A.ENABLED, A.ST_CLF_CD
+		   ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'tenure' AND CM_CODE = A.ST_CLF_CD) AS ST_CLF_CD_NM
+		   , A.EMP_SALARY, A.PROFILE_FILE_NO
+		   , A.SIGN_FILE_NO, A.WORK_METHOD_CODE
+		   , (SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'workMethod' AND CM_CODE = A.WORK_METHOD_CODE) AS WORK_METHOD_CODE_NM
+		   , DCODE
+		   , (SELECT DNM FROM DEPT WHERE DCODE = A.DCODE) AS DNM
+				   
+		   , B.AUTHRT_ID
+		   
+		FROM EMP A 
+		LEFT JOIN AUTHOR_ALWNC B ON A.EMP_NO = B.EMP_NO
+		WHERE A.EMP_NO = #{empNo}
+	</select>
+	
+	<!-- 유저 한명검색(인사정보)(우재) -->
+	<select id="SelectEmp2" resultMap="empMap" parameterType="String" >
+		SELECT A.EMP_NO,A.EMP_NM ,A.EMP_PASS ,A.GEN_CODE
+		   ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'gender' AND CM_CODE = GEN_CODE) AS GEN_CODE_NM
+		   ,A.EMP_MAIL ,A.EMP_ADDR1 ,A.EMP_ADDR2 ,A.EMP_ADDR3 ,A.EMP_BRDT ,A.REGN
+		   ,A.CP_NO,A.OFC_NO ,A.EMP_IMG ,A.BANK_CODE ,A.ACCT_NO
+		   ,A.OWNER,A.ENT_DATE ,A.OUT_DATE ,A.EMP_MM ,A.CTRT_CASE_CODE
+		   ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'contract' AND CM_CODE = CTRT_CASE_CODE) AS CTRT_CASE_NM
+		   ,A.ACENTER ,A.DCODE
+		   ,A.ENT_CASE_CODE
+		   ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'join' AND CM_CODE = ENT_CASE_CODE) AS ENT_CASE_NM
+		   ,A.BS_WKTIME
+		   ,A.DTCODE
+		   ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'position' AND CM_CODE = DTCODE) AS DTCODE_NM
+		   ,A.PTN_CODE
+		   ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'spot' AND CM_CODE = PTN_CODE) AS PTN_CODE_NM
+		   ,A.JCODE
+		   ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'job' AND CM_CODE = JCODE) AS JCODE_NM
+		   ,A.GRD_CODE
+		   ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'hobong' AND CM_CODE = GRD_CODE) AS GRD_CODE_NM
+		   ,A.ENABLED ,A.ST_CLF_CD
+		   ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'tenure' AND CM_CODE = ST_CLF_CD) AS ST_CLF_CD_NM
+		   ,A.EMP_SALARY ,A.PROFILE_FILE_NO
+		   ,A.SIGN_FILE_NO ,A.WORK_METHOD_CODE
+		   ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'workMethod' AND CM_CODE = WORK_METHOD_CODE) AS WORK_METHOD_CODE_NM
+		   
+		   ,B.dnm
+		   
+		FROM EMP A 
+		LEFT JOIN DEPT B ON A.DCODE = B.DCODE 
+		WHERE A.EMP_NO = #{empNo}
+	</select>
+	
+	
+	<!-- 계약정보 가져오기-->
+	<select id="myCnthx" parameterType="String" resultType="CnthxVO">
+		SELECT CNTHX_NO, EMP_NO, CNT_WRITER, BLCT_SDATE
+		     , BLCT_EDATE, CTRT_CASE_CODE
+		     , (SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'contract' AND CM_CODE = CTRT_CASE_CODE) AS CTRT_CASE_CODE_NM
+		     , BWCT_SDATE, BWCT_EDATE
+		     , BCNT_AMT, BFEX, BINC_CLF, CNG_DATE, CNG_MM, PR_SDATE, PR_EDATE
+		     , CNT_EDITOR, EDIT_DATE, DELYN
+		     , (SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'use' AND CM_CODE = DELYN) AS DELYN_NM
+		FROM CNTHX
+		WHERE EMP_NO = #{empNo}
+	</select>
+
+	<!-- 학력정보 가져오기 -->
+	<select id="myAcca" parameterType="String" resultType="AccaVO">
+		SELECT EMP_NO, AC_NM, AC_ETDATE, AC_EDATE, GRAD_CLF
+		     , (SELECT CM_NM FROM CMCODE WHERE CM_GROUP='graduate' AND CM_CODE = GRAD_CLF)AS GRAD_CLF_NM
+		     , MAJ
+		FROM ACCA
+		WHERE EMP_NO = #{emoNo}
+	</select>
+	
+	<!-- 경력 정보 가져오기 -->
+	<select id="myCareer" parameterType="String" resultType="CareerVO">
+		SELECT EMP_NO, CA_NM, CA_CLF, CA_CNTCASE, CA_ETDATE
+		     , CA_EDATE, CA_DEPT, CA_JOB, CA_DUTY, CA_GRD
+		    
+		FROM CAREER
+		WHERE EMP_NO = #{emoNo}
+	</select>
+	
+	<!-- 파일 정보 INSERT -->
+	<insert id="fileInsert" parameterType="FileInfoVO">
+		<selectKey resultType="int" order="BEFORE" keyProperty="fileSn">
+			SELECT NVL(MAX(FILE_SN),0) + 1 FROM FILE_INFO WHERE FILE_UDTER = #{fileUdter}
+		</selectKey>
+		INSERT INTO FILE_INFO(
+		    FILE_SN, ORFI_NAME, SVFI_NAME, FILE_SIZE,  
+		    SV_DATE, FILE_UDTER, FILE_ROOT, FILE_SETTING 
+		)VALUES(
+			#{fileSn},#{orfiName},#{svfiName},#{fileSize},sysdate,#{fileUdter},#{fileRoot},#{fileSetting}
+		)
+	</insert>
+	
+	<!-- 사원 프로필 update -->
+	<update id="updateFileEmp" parameterType="empVO" >
+		UPDATE EMP
+		SET
+		    EMP_IMG = #{empImg}
+		   
+		WHERE
+		    EMP_NO = #{empNo}
+	</update>
+	
+	<!-- 파일 정보 SELECT -->
+	<select id="fileSelect" parameterType="String" resultType="FileInfoVO">
+		SELECT  FILE_SN, ORFI_NAME, SVFI_NAME, FILE_SIZE, 
+       		    SV_DATE, FILE_UDTER, FILE_ROOT, FILE_SETTING 
+        FROM FILE_INFO
+        WHERE FILE_UDTER = #{fileUdter} AND FILE_SETTING = 'myimg'
+		ORDER BY FILE_SN DESC
+	</select>
+	<!-- 사원 인사정보 update -->
+	<update id="updateInsa" parameterType="empVO" >
+		UPDATE EMP
+		SET
+		    ST_CLF_CD = #{stClfCd},
+		    ENT_CASE_CODE = #{entCaseCode}, ENT_DATE = #{entDate}, CTRT_CASE_CODE = #{ctrtCaseCode}
+		   
+		WHERE
+		    EMP_NO = #{empNo}
+	</update>
+	
+	<!-- 사원 개인정보 update -->
+	<update id="updatePerson" parameterType="empVO" >
+		UPDATE EMP
+		SET
+		    EMP_NM = #{empNm}, REGN = #{regn}, EMP_PASS = #{empPass}, EMP_MAIL = #{empMail},
+		    CP_NO = #{cpNo}, EMP_ADDR1 = #{empAddr1}, EMP_ADDR2 = #{empAddr2}, EMP_ADDR3 = #{empAddr3}
+		   
+		WHERE
+		    EMP_NO = #{empNo}
+	</update>
+	
+	<!-- 사원 계약정보 update -->
+	<update id="updateCnthx" parameterType="cnthxVO" >
+		UPDATE CNTHX
+		SET
+			CTRT_CASE_CODE = #{ctrtCaseCode}
+		    ,BLCT_SDATE = #{blctEdate}, BLCT_EDATE = #{blctEdate}, BCNT_AMT = #{bcntAmt}
+		    ,BWCT_SDATE = #{bwctSdate}, BWCT_EDATE = #{bwctEdate}
+		    
+		WHERE
+		    EMP_NO = #{empNo}
+	</update>
+	
+	
+<!-- ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ myPage CRUD 끝 ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ-->
+	
+	<!-- 출근 등록 -->
+	<insert id="gotoWork" parameterType="WkHrVO">
+		INSERT INTO WK_HR(
+			WA_DATE
+		,	EMP_NO
+		,	WH_STIME
+		,	WH_ETIME
+		,	WH_TLTIME
+		,	WK_CODE
+		)
+		VALUES(
+			SUBSTR(TO_DATE(SYSDATE),1,10)
+		,	#{empNo}
+		,	sysdate
+		,	#{whEtime}
+		,	#{whTltime}
+		,	#{wkCode}
+		)
+	</insert>
+	
+	
+	<!-- 퇴근 등록 -->
+	<update id="leaveWork" parameterType="WkHrVO">
+		UPDATE WK_HR
+		SET WH_ETIME = SYSDATE
+		WHERE EMP_NO = #{empNo}
+		AND TO_CHAR(WA_DATE,'YYYY-MM-DD') = TO_CHAR(SYSDATE,'YYYY-MM-DD')
+	</update>
+	
+	<!-- 총근무시간 -->
+	<update id="totalWorkTime" parameterType="WkHrVO">
+		UPDATE WK_HR
+		SET WH_ETIME = SYSDATE,
+		    WH_TLTIME = (
+		        (NVL(TO_DATE(WH_ETIME, 'YYYY-MM-DD HH24:MI:SS'), SYSDATE) - TO_DATE(WH_STIME, 'YYYY-MM-DD HH24:MI:SS')) * 24
+		    )
+		WHERE EMP_NO = #{empNo}
+		AND TO_CHAR(WA_DATE, 'YYYY-MM-DD') = TO_CHAR(SYSDATE, 'YYYY-MM-DD')
+	</update>
+	
+	<!-- 출퇴근 정보 조회 -->
+	<select id="commuteSelect" parameterType="WkHrVO">
+		SELECT * FROM
+		WK_HR
+		WHERE TO_CHAR(WA_DATE,'YYYY-MM-DD') = TO_CHAR(SYSDATE,'YYYY-MM-DD')
+		AND EMP_NO = #{empNo}
+	</select>
+	
+	<!-- 비밀번호 찾기 조회 -->
+	<select id="findPw" parameterType="EmpVO" resultType="int">
+		select count(*) from 
+		(select * from emp where emp_no =#{empNo} and SUBSTR(regn, 1,6)=#{regn} and emp_mail = #{empMail})
+	</select>
+	
+	
+	<update id="updatePw" parameterType="EmpVO" >
+		update emp set emp_pass=#{empPass} where emp_no =#{empNo}
+	</update>
+	
+	<select id="selectMyImg" parameterType="String" resultType="String">
+		select emp_img from EMP where emp_no = #{empNo}
+	</select>
+	
+	
+</mapper>

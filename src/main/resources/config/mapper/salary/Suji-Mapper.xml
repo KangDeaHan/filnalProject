@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.salary.mapper.SujiMapper">
+	<select id="getTotal" resultType="int">
+	    select count(*) from emp
+	</select>
+
+	<select id="getEmpOnePage" parameterType="SujiVO" resultType="kr.or.ddit.common.vo.EmpVO">
+	   select  sujiT.*  from   
+	             (select rownum as sujinum, emp_no, emp_nm from emp)  sujiT 
+       where 
+              sujiT.sujinum between #{sIndex} and #{eIndex} 
+	</select>
+</mapper>

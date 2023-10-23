@@ -1,0 +1,727 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.salary.mapper.SalaryMapper">
+
+
+	<!-- 사원테이블 -->
+	<resultMap type="empVO" id="empMap">
+		<result property="empNo" column="EMP_NO"/>
+		<result property="empNm" column="EMP_NM"/>
+		<result property="empPass" column="EMP_PASS"/>
+		<result property="genCode" column="GEN_CODE"/>
+		<result property="empMail" column="EMP_MAIL"/>
+		<result property="empAddr1" column="EMP_ADDR1"/>
+		<result property="empAddr2" column="EMP_ADDR2"/>
+		<result property="empAddr3" column="EMP_ADDR3"/>
+		<result property="empBrdt" column="EMP_BRDT"/>
+		<result property="regn" column="REGN"/>
+		<result property="cpNo" column="CP_NO"/>
+		<result property="ofcNo" column="OFC_NO"/>
+		<result property="empImg" column="EMP_IMG"/>
+		<result property="bankCode" column="BANK_CODE"/>
+		<result property="acctNo" column="ACCT_NO"/>
+		<result property="owner" column="OWNER"/>
+		<result property="entDate" column="ENT_DATE"/>
+		<result property="outDate" column="OUT_DATE"/>
+		<result property="empMm" column="EMP_MM"/>
+		<result property="ctrtCaseCode" column="CTRT_CASE_CODE"/>
+		<result property="entCaseCode" column="ENT_CASE_CODE"/>
+		<result property="bsWktime" column="BS_WKTIME"/>
+		<result property="dtcode" column="DTCODE"/>
+		<result property="ptnCode" column="PTN_CODE"/>
+		<result property="jcode" column="JCODE"/>
+		<result property="grdCode" column="GRD_CODE"/>
+		<result property="enabled" column="ENABLED"/>
+		<result property="stClfCd" column="ST_CLF_CD"/>
+		<result property="empSalary" column="EMP_SALARY"/>
+		<result property="profileFileNo" column="PROFILE_FILE_NO"/>
+		<result property="signFileNo" column="SIGN_FILE_NO"/>
+		<result property="workMethodCode" column="WORK_METHOD_CODE"/>
+		<result property="dcode" column="DCODE"/>
+		<result property="acenter" column="ACENTER"/>
+		<result property="team" column="TEAM"/>
+		
+		<result property="rnum" column="RNUM"/>
+		
+		<!--  코드네임 -->
+		<result property="genCodeNm" column="GEN_CODE_NM"/>
+		<result property="bankCodeNm" column="BANK_CODE_NM"/>
+		<result property="ctrtCaseNm" column="CTRT_CASE_NM"/>
+		<result property="entCaseNm" column="ENT_CASE_NM"/>
+		<result property="dtCodeNm" column="DTCODE_NM"/>
+		<result property="ptnCodeNm" column="PTN_CODE_NM"/>
+		<result property="jcodeNm" column="JCODE_NM"/>
+		<result property="grdCodeNm" column="GRD_CODE_NM"/>
+		<result property="stClfCdNm" column="ST_CLF_CD_NM"/>
+		<result property="workMethodCodeNm" column="WORK_METHOD_CODE_NM"/>
+		
+		<!-- 부서 테이블 -->	
+		<collection property="deptVOList" resultMap="deptMap" />
+		
+	</resultMap>
+	
+	<!-- 부서 테이블 -->
+	<resultMap type="deptVO" id="deptMap">
+		<result property="dcode" column="DCODE"/>
+		<result property="uprDcode" column="UPR_DCODE"/>
+		<result property="dnm" column="DNM"/>
+		<result property="empNo" column="EMP_NO"/>
+		<result property="dabst" column="DABST"/>
+		<result property="delynCd" column="DELYN_CD"/>
+	</resultMap>
+
+
+
+<!-- BookInfoDao->map : {size=10, currentPage=1, keyword=1457} -->
+	<sql id="where">
+		<!-- 전체검색 -->
+		<choose>
+			<when test="condition!=null and condition!=''">
+				<if test="condition=='empNo'">
+					AND (
+						A.EMP_NO			LIKE '%' || #{keyword} || '%'
+					)
+				</if>
+				<if test="condition=='empNm'">
+					AND (
+						A.EMP_NM			LIKE '%' || #{keyword} || '%'
+					)
+				</if>
+				<if test="condition=='dnm'">
+					AND (
+						B.DNM			LIKE '%' || #{keyword} || '%'
+					)
+				</if>
+				<if test="condition=='ptnCodeNm'">
+					AND (
+						(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'spot' AND CM_CODE = PTN_CODE) LIKE '%' || #{keyword} || '%'
+					)
+				</if>
+			</when>
+			<otherwise>
+				<if test="keyword!=null and keyword!=''">  <!-- 키워드가 없을 때 (사실 키워드 없어도 %% 처리 되기 때문에 에러는 안나지만, 아예 안쓰면 괜히 and절 실행 안해도 되서, 시간 단축 가능 (if문 쓰는 이유) -->
+				  AND (
+					A.EMP_NO			LIKE '%' || #{keyword} || '%' OR
+					A.EMP_NM			LIKE '%' || #{keyword} || '%' OR 
+				    A.EMP_BRDT			LIKE '%' || #{keyword} || '%' OR 
+				    A.REGN				LIKE '%' || #{keyword} || '%' OR
+				    A.CP_NO				LIKE '%' || #{keyword} || '%' OR
+				    A.OFC_NO 			LIKE '%' || #{keyword} || '%' OR
+				    A.EMP_IMG 			LIKE '%' || #{keyword} || '%' OR
+				    A.BANK_CODE 		LIKE '%' || #{keyword} || '%' OR
+				    A.ACCT_NO			LIKE '%' || #{keyword} || '%' OR
+				    A.OWNER				LIKE '%' || #{keyword} || '%' OR
+				    A.ENT_DATE			LIKE '%' || #{keyword} || '%' OR 
+				    A.OUT_DATE			LIKE '%' || #{keyword} || '%' OR 
+				    A.EMP_MM			LIKE '%' || #{keyword} || '%' OR 
+				    (SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'contract' AND CM_CODE = CTRT_CASE_CODE) AS CTRT_CASE_NM LIKE '%' || #{keyword} || '%' OR 
+				    A.ACENTER 			LIKE '%' || #{keyword} || '%' OR
+				    A.DCODE				LIKE '%' || #{keyword} || '%' OR
+				    (SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'join' AND CM_CODE = ENT_CASE_CODE) AS ENT_CASE_NM
+				    A.BS_WKTIME			LIKE '%' || #{keyword} || '%' OR
+				    (SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'position' AND CM_CODE = DTCODE) AS DTCODE_NM
+				    (SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'spot' AND CM_CODE = PTN_CODE) AS PTN_CODE_NM
+				    (SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'job' AND CM_CODE = JCODE) AS JCODE_NM
+				    (SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'hobong' AND CM_CODE = GRD_CODE) AS GRD_CODE_NM
+				    A.ENABLED 			LIKE '%' || #{keyword} || '%' OR
+				    (SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'tenure' AND CM_CODE = ST_CLF_CD) AS ST_CLF_CD_NM	LIKE '%' || #{keyword} || '%' OR
+				    A.EMP_SALARY		LIKE '%' || #{keyword} || '%' OR 	
+				    (SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'workMethod' AND CM_CODE = WORK_METHOD_CODE) AS WORK_METHOD_CODE_NM	LIKE '%' || #{keyword} || '%' OR
+				    B.DNM				LIKE '%' || #{keyword} || '%'
+				)
+		        </if>
+	        </otherwise>
+        </choose>
+	</sql>
+<!-- 사원 목록
+	String keyword = "미션"
+	
+	WHERE 1 = 1은 늘 참(TRUE)임.
+	조건이 2개 이상일 때 WHERE + AND + AND...
+	조건이 1개일 때 WHERE이어야 함
+	
+	WHERE 조건1(생략)
+	AND   조건2			=> 오류 발생
+	
+	==> 해결
+	WHERE 1 = 1
+	AND	  조건1(생략)
+	AND   조건2			=> 정상
+	
+	 -->
+	 <!-- 사원정보 전체 리스트 조회  -->
+	<select id="selectEmpList" parameterType="PageVO" resultMap="empMap">
+		WITH U AS(
+	    	SELECT ROW_NUMBER() OVER(ORDER BY T.EMP_NO ASC) RNUM
+		            , T.*
+            FROM
+		    (
+				
+		    SELECT 
+				    A.EMP_NO
+				   ,A.EMP_NM 
+				   ,A.EMP_PASS 
+				   ,A.GEN_CODE
+				   ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'gender' AND CM_CODE = GEN_CODE) AS GEN_CODE_NM
+				   ,A.EMP_MAIL 
+				   ,A.EMP_ADDR1 
+				   ,A.EMP_ADDR2 
+				   ,A.EMP_ADDR3 
+				   ,A.EMP_BRDT 
+				   ,A.REGN
+				   ,A.CP_NO
+				   ,A.OFC_NO 
+				   ,A.EMP_IMG 
+				   ,A.BANK_CODE 
+				   ,A.ACCT_NO
+				   ,A.OWNER
+				   ,A.ENT_DATE 
+				   ,A.OUT_DATE 
+				   ,A.EMP_MM 
+				   ,A.CTRT_CASE_CODE
+				   ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'contract' AND CM_CODE = CTRT_CASE_CODE) AS CTRT_CASE_NM
+				   ,A.ACENTER 
+				   ,A.DCODE
+				   ,A.ENT_CASE_CODE
+				   ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'join' AND CM_CODE = ENT_CASE_CODE) AS ENT_CASE_NM
+				   ,A.BS_WKTIME
+				   ,A.DTCODE
+				   ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'position' AND CM_CODE = DTCODE) AS DTCODE_NM
+				   ,A.PTN_CODE
+				   ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'spot' AND CM_CODE = PTN_CODE) AS PTN_CODE_NM
+				   ,A.JCODE
+				   ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'job' AND CM_CODE = JCODE) AS JCODE_NM
+				   ,A.GRD_CODE
+				   ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'hobong' AND CM_CODE = GRD_CODE) AS GRD_CODE_NM
+				   ,A.ENABLED 
+				   ,A.ST_CLF_CD
+				   ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'tenure' AND CM_CODE = ST_CLF_CD) AS ST_CLF_CD_NM
+				   ,A.EMP_SALARY 
+				   ,A.PROFILE_FILE_NO
+				   ,A.SIGN_FILE_NO 
+				   ,A.WORK_METHOD_CODE
+				   ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'workMethod' AND CM_CODE = WORK_METHOD_CODE) AS WORK_METHOD_CODE_NM
+				   ,B.DNM
+			FROM EMP A LEFT JOIN DEPT B 
+			ON A.DCODE = B.DCODE
+			
+			WHERE 1 = 1
+			<include refid="where"></include>
+			) T
+		)
+		SELECT  U.*
+		FROM    U
+		WHERE  U.RNUM BETWEEN #{startPage} AND #{endPage} 
+	</select>
+	
+	 <!-- 선택된 정산대상자 정보 조회  (wagePrev에서 사용) (파라미터 : empNo)-->
+	<select id="selectCheckedEmpInfo" parameterType="SalaryCertVO" resultMap="empMap">
+		SELECT A.EMP_NO
+			  ,A.EMP_NM
+        	  ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'contract' AND CM_CODE = CTRT_CASE_CODE) AS CTRT_CASE_NM
+              ,B.DNM
+              ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'spot' AND CM_CODE = PTN_CODE) AS PTN_CODE_NM
+              ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'position' AND CM_CODE = DTCODE) AS DTCODE_NM
+              ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'job' AND CM_CODE = JCODE) AS JCODE_NM
+              ,(SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'tenure' AND CM_CODE = ST_CLF_CD) AS ST_CLF_CD_NM
+		FROM EMP A LEFT OUTER JOIN DEPT B 
+			ON A.DCODE = B.DCODE
+        WHERE A.EMP_NO = #{empNo}
+	</select>
+	
+	<!-- 전체 글 수 조회, 파라미터는 없어도 가능함 -->
+	<select id="getTotal" parameterType="PageVO"  resultType="int">
+	    SELECT COUNT(*) 
+	    FROM EMP A LEFT JOIN DEPT B 
+			ON A.DCODE = B.DCODE
+	    WHERE 1 = 1
+	    <include refid="where"></include>
+	</select>
+	
+	<!-- 1명의 급여정산번호 insert -->
+	<insert id="insertPR" parameterType="SalaryCertVO">
+		<selectKey resultType="int" order="BEFORE" keyProperty="scNo">
+			SELECT (NVL(MAX(SC_NO),0) + 1) FROM SALARY_CERT
+		</selectKey>
+		INSERT INTO SALARY_CERT(SC_NO, EMP_NO, PT_NO, PR_YR, PR_MTH, PR_PDATE, PR_STL_NM)
+		VALUES(#{scNo}, #{empNo}, #{ptNo}, #{prYr}, #{prMth}, #{prPdate}, #{prStlNm})
+	</insert>	
+	
+	<!-- 정산대상자 명수 -->
+	<select id="selectEmpCnt" parameterType="SalaryCertVO" resultType="int">
+		SELECT COUNT(*) 
+		FROM SALARY_CERT
+		WHERE PR_YR=#{prYr} AND PR_MTH = #{prMth} AND PT_NO = #{ptNo}
+	</select>
+	
+	<!-- salary_Cert 테이블에서 pt_no가 1번이고, pr_Yr, pr_Mth가 2023, 9인 사원 번호(String) 리스트를 찾기. -->
+	<select id="selectCheckedEmpNoList" parameterType="SalaryCertVO" resultType="SalaryCertVO">
+		SELECT E.EMP_NO
+			  ,E.EMP_NM
+		FROM EMP E INNER JOIN SALARY_CERT S
+		ON E.EMP_NO = S.EMP_NO
+		WHERE PR_YR=#{prYr} AND PR_MTH = #{prMth} AND PT_NO = #{ptNo}
+	</select>
+	
+	<!-- 한사람의 기본급 가져오는 쿼리 select  -->	
+	<select id="selectBaseSalary" parameterType="SalaryCertVO" resultType="SalaryCertVO">
+		SELECT E.EMP_NO
+			  ,E.EMP_NM
+			  ,C.BCNT_AMT as BASE_PAY
+			  ,ROUND(C.BCNT_AMT/209) AS BASIC_HOUR_WAGE
+		FROM EMP E
+		INNER JOIN CNTHX C ON C.EMP_NO = E.EMP_NO
+		WHERE E.EMP_NO = #{empNo}
+		AND C.BWCT_SDATE = (
+		    SELECT MAX(BWCT_SDATE)
+		    FROM CNTHX
+		    WHERE EMP_NO = #{empNo}
+		)
+	</select>
+
+
+	<!-- 지급항목 - 기타수당 금액 전체 목록 select (파라미터 : empNo, prYr, prMth, ptNo)-->
+	<select id="selectOtherPay" parameterType="SalaryCertVO" resultType="PayDedVO">
+		SELECT
+				(SELECT EMP_NO FROM EMP WHERE EMP_NO = #{empNo}) as EMP_NO
+				, (SELECT EMP_NM FROM EMP WHERE EMP_NO = #{empNo}) as EMP_NM
+				, A.PTM_NO, A.PT_NO, A.PD_NO 
+	        	, B.PD_NM
+	       	 	, CASE WHEN B.PD_NM='기본급' THEN FN_GET_BASIC(#{empNo}) 
+	                 WHEN B.PD_NM='초과근무수당' THEN FN_GET_EXTIME(#{prYr}, #{prMth}, #{empNo}) 
+	                 ELSE B.PD_AMT END PD_AMT
+	       	 	, B.PD_EPN
+	       	 	, B.PD_FML
+	         	, B.PD_LAW_YN
+	         	, B.PD_TAX_YN
+	         	, B.PD_TYPE
+		FROM  PT_MAKE A, PAY_DED B
+		WHERE A.PD_NO = B.PD_NO
+		AND     PT_NO = #{ptNo} AND PD_TYPE='B0401' AND PD_LAW_YN='B0102'
+		ORDER BY A.PD_NO
+	</select>
+	
+	<!-- 공제항목 - 법정 공제 항목 금액 전체 select (파라미터 : empNo, ptNo, prYr, prMth) 
+	/ 결과값 : empNo, empNm, dpdntNum(부양가족수), totalTaxAmt(과세총액), pdNo, pdNm, pdAmt, pdLawYn    -->
+	<select id="selectDedSummary" parameterType="SalaryCertVO" resultType="SalaryCertVO">
+		<![CDATA[
+		SELECT  
+		        (SELECT EMP_NO FROM EMP WHERE EMP_NO = #{empNo}) as EMP_NO
+				,(SELECT EMP_NM FROM EMP WHERE EMP_NO = #{empNo}) as EMP_NM
+		        ,(SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo}) AS DPDNT_NUM
+		        ,FN_GET_TOTAL_TAX_AMT(#{empNo}, #{ptNo}, #{prYr}, #{prMth}) AS TOTAL_TAX_AMT
+		        ,B.PD_NO, B.PD_NM
+		        ,CASE 
+		              WHEN B.PD_NM = '국민연금' THEN 
+		                  CASE 
+		                      WHEN FN_GET_TOTAL_TAX_AMT(#{empNo}, #{ptNo}, #{prYr}, #{prMth}) < 370000 THEN ROUND(370000 * 0.045, -1) 
+		                      WHEN FN_GET_TOTAL_TAX_AMT(#{empNo}, #{ptNo}, #{prYr}, #{prMth}) <= 5900000 THEN ROUND(FN_GET_TOTAL_TAX_AMT(#{empNo}, #{ptNo}, #{prYr}, #{prMth})*0.045, -1)
+		                      ELSE ROUND(5900000 * 0.045, -1)
+		                  END     
+		              WHEN B.PD_NM = '건강보험' THEN
+		                  CASE 
+		                      WHEN FN_GET_TOTAL_TAX_AMT(#{empNo}, #{ptNo}, #{prYr}, #{prMth}) < 279266 THEN ROUND(279266 * 0.03545, -1)
+		                      WHEN FN_GET_TOTAL_TAX_AMT(#{empNo}, #{ptNo}, #{prYr}, #{prMth}) <= 110332300 THEN ROUND(FN_GET_TOTAL_TAX_AMT(#{empNo}, #{ptNo}, #{prYr}, #{prMth})*0.03545, -1)
+		                      ELSE ROUND(110332300 * 0.03545, -1)
+		                  END     
+		              WHEN B.PD_NM = '장기요양보험' THEN
+		                  CASE
+		                      WHEN FN_GET_TOTAL_TAX_AMT(#{empNo}, #{ptNo}, #{prYr}, #{prMth}) < 279266 THEN ROUND(ROUND(279266 * 0.03545, -1) * 0.1281, -1)
+		                      WHEN FN_GET_TOTAL_TAX_AMT(#{empNo}, #{ptNo}, #{prYr}, #{prMth}) <= 110332300 THEN ROUND( ROUND(FN_GET_TOTAL_TAX_AMT(#{empNo}, #{ptNo}, #{prYr}, #{prMth})* 0.03545, -1) * 0.1281, -1)
+		                      ELSE ROUND( ROUND(110332300 * 0.03545, -1) * 0.1281, -1)
+		                  END    
+		              WHEN B.PD_NM = '고용보험' THEN ROUND(FN_GET_TOTAL_TAX_AMT(#{empNo}, #{ptNo}, #{prYr}, #{prMth})* 0.009, -1) 
+		              WHEN B.PD_NM = '소득세' THEN ( 
+		                                            SELECT
+		                                                    CASE
+		                                                        WHEN (SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo} )  =  1 THEN  ICT01
+		                                                        WHEN (SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo} )  =  2 THEN  ICT02
+		                                                        WHEN (SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo} )  =  3 THEN  ICT03
+		                                                        WHEN (SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo} )  =  4 THEN  ICT04
+		                                                        WHEN (SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo} )  =  5 THEN  ICT05
+		                                                        WHEN (SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo} )  =  6 THEN  ICT06
+		                                                        WHEN (SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo} )  =  7 THEN  ICT07
+		                                                        WHEN (SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo} )  =  8 THEN  ICT08
+		                                                        WHEN (SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo} )  =  9 THEN  ICT09
+		                                                        WHEN (SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo} )  = 10 THEN  ICT10
+		                                                        WHEN (SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo} )  = 11 THEN  ICT11
+		                                                    END AS ICT_AMT
+		                                            FROM WK_INCOME_TAX
+		                                            WHERE START_AMT*1000 <= FN_GET_TOTAL_TAX_AMT(#{empNo}, #{ptNo}, #{prYr}, #{prMth})
+		                                            AND END_AMT*1000 > FN_GET_TOTAL_TAX_AMT(#{empNo}, #{ptNo}, #{prYr}, #{prMth}) 
+		                                            )
+		              WHEN B.PD_NM = '지방소득세' THEN (        
+		                                              SELECT 
+		                                                     ROUND(
+		                                                           CASE
+		                                                                WHEN (SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo} )  =  1 THEN  ICT01
+		                                                                WHEN (SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo} )  =  2 THEN  ICT02
+		                                                                WHEN (SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo} )  =  3 THEN  ICT03
+		                                                                WHEN (SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo} )  =  4 THEN  ICT04
+		                                                                WHEN (SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo} )  =  5 THEN  ICT05
+		                                                                WHEN (SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo} )  =  6 THEN  ICT06
+		                                                                WHEN (SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo} )  =  7 THEN  ICT07
+		                                                                WHEN (SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo} )  =  8 THEN  ICT08
+		                                                                WHEN (SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo} )  =  9 THEN  ICT09
+		                                                                WHEN (SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo} )  = 10 THEN  ICT10
+		                                                                WHEN (SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo} )  = 11 THEN  ICT11
+		                                                          END * 0.1, -1) as LC_ICT_AMT
+		                                            FROM WK_INCOME_TAX
+		                                            WHERE START_AMT*1000 <= FN_GET_TOTAL_TAX_AMT(#{empNo}, #{ptNo}, #{prYr}, #{prMth})
+		                                                AND END_AMT*1000 > FN_GET_TOTAL_TAX_AMT(#{empNo}, #{ptNo}, #{prYr}, #{prMth})
+		                                            )
+		              ELSE B.PD_AMT                                      
+		        END PD_AMT
+		        , B.PD_LAW_YN
+		FROM  PT_MAKE A, PAY_DED B
+		WHERE A.PD_NO = B.PD_NO                         
+		AND     PT_NO = #{ptNo} AND PD_TYPE='B0402' AND PD_LAW_YN = 'B0101'
+		ORDER BY A.PD_NO
+		]]>
+	</select>	
+	
+	<!-- 공제항목 - 기타 공제 항목 금액 전체 select (파라미터 : empNo, ptNo) 
+	/ 결과값 : empNo, empNm, dpdntNum(부양가족수), totalTaxAmt(과세총액), pdNo, pdNm, pdAmt, pdLawYn    -->
+	<select id="selectOtherDed" parameterType="SalaryCertVO" resultType="SalaryCertVO">
+		<![CDATA[
+		SELECT  
+		        (SELECT EMP_NO FROM EMP WHERE EMP_NO = #{empNo}) as EMP_NO
+				,(SELECT EMP_NM FROM EMP WHERE EMP_NO = #{empNo}) as EMP_NM
+		        ,(SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo}) AS DPDNT_NUM
+		        ,FN_GET_TOTAL_TAX_AMT(#{empNo}, #{ptNo}, #{prYr}, #{prMth}) AS TOTAL_TAX_AMT
+		        ,B.PD_NO, B.PD_NM
+		        ,CASE 
+		              WHEN B.PD_NM = '국민연금' THEN 
+		                  CASE 
+		                      WHEN FN_GET_TOTAL_TAX_AMT(#{empNo}, #{ptNo}, #{prYr}, #{prMth}) < 370000 THEN ROUND(370000 * 0.045, -1) 
+		                      WHEN FN_GET_TOTAL_TAX_AMT(#{empNo}, #{ptNo}, #{prYr}, #{prMth}) <= 5900000 THEN ROUND(FN_GET_TOTAL_TAX_AMT(#{empNo}, #{ptNo}, #{prYr}, #{prMth})*0.045, -1)
+		                      ELSE ROUND(5900000 * 0.045, -1)
+		                  END     
+		              WHEN B.PD_NM = '건강보험' THEN
+		                  CASE 
+		                      WHEN FN_GET_TOTAL_TAX_AMT(#{empNo}, #{ptNo}, #{prYr}, #{prMth}) < 279266 THEN ROUND(279266 * 0.03545, -1)
+		                      WHEN FN_GET_TOTAL_TAX_AMT(#{empNo}, #{ptNo}, #{prYr}, #{prMth}) <= 110332300 THEN ROUND(FN_GET_TOTAL_TAX_AMT(#{empNo}, #{ptNo}, #{prYr}, #{prMth})*0.03545, -1)
+		                      ELSE ROUND(110332300 * 0.03545, -1)
+		                  END     
+		              WHEN B.PD_NM = '장기요양보험' THEN
+		                  CASE
+		                      WHEN FN_GET_TOTAL_TAX_AMT(#{empNo}, #{ptNo}, #{prYr}, #{prMth}) < 279266 THEN ROUND(ROUND(279266 * 0.03545, -1) * 0.1281, -1)
+		                      WHEN FN_GET_TOTAL_TAX_AMT(#{empNo}, #{ptNo}, #{prYr}, #{prMth}) <= 110332300 THEN ROUND( ROUND(FN_GET_TOTAL_TAX_AMT(#{empNo}, #{ptNo}, #{prYr}, #{prMth})* 0.03545, -1) * 0.1281, -1)
+		                      ELSE ROUND( ROUND(110332300 * 0.03545, -1) * 0.1281, -1)
+		                  END    
+		              WHEN B.PD_NM = '고용보험' THEN ROUND(FN_GET_TOTAL_TAX_AMT(#{empNo}, #{ptNo}, #{prYr}, #{prMth})* 0.009, -1) 
+		              WHEN B.PD_NM = '소득세' THEN ( 
+		                                            SELECT
+		                                                    CASE
+		                                                        WHEN (SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo} )  =  1 THEN  ICT01
+		                                                        WHEN (SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo} )  =  2 THEN  ICT02
+		                                                        WHEN (SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo} )  =  3 THEN  ICT03
+		                                                        WHEN (SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo} )  =  4 THEN  ICT04
+		                                                        WHEN (SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo} )  =  5 THEN  ICT05
+		                                                        WHEN (SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo} )  =  6 THEN  ICT06
+		                                                        WHEN (SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo} )  =  7 THEN  ICT07
+		                                                        WHEN (SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo} )  =  8 THEN  ICT08
+		                                                        WHEN (SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo} )  =  9 THEN  ICT09
+		                                                        WHEN (SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo} )  = 10 THEN  ICT10
+		                                                        WHEN (SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo} )  = 11 THEN  ICT11
+		                                                    END AS ICT_AMT
+		                                            FROM WK_INCOME_TAX
+		                                            WHERE START_AMT*1000 <= FN_GET_TOTAL_TAX_AMT(#{empNo}, #{ptNo}, #{prYr}, #{prMth})
+		                                            AND END_AMT*1000 > FN_GET_TOTAL_TAX_AMT(#{empNo}, #{ptNo}, #{prYr}, #{prMth})
+		                                            )
+		              WHEN B.PD_NM = '지방소득세' THEN (        
+		                                              SELECT 
+		                                                     ROUND(
+		                                                           CASE
+		                                                                WHEN (SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo} )  =  1 THEN  ICT01
+		                                                                WHEN (SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo} )  =  2 THEN  ICT02
+		                                                                WHEN (SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo} )  =  3 THEN  ICT03
+		                                                                WHEN (SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo} )  =  4 THEN  ICT04
+		                                                                WHEN (SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo} )  =  5 THEN  ICT05
+		                                                                WHEN (SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo} )  =  6 THEN  ICT06
+		                                                                WHEN (SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo} )  =  7 THEN  ICT07
+		                                                                WHEN (SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo} )  =  8 THEN  ICT08
+		                                                                WHEN (SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo} )  =  9 THEN  ICT09
+		                                                                WHEN (SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo} )  = 10 THEN  ICT10
+		                                                                WHEN (SELECT DEPENDANT_NUM FROM EMP WHERE EMP_NO = #{empNo} )  = 11 THEN  ICT11
+		                                                          END * 0.1, -1) as LC_ICT_AMT
+		                                            FROM WK_INCOME_TAX
+		                                            WHERE START_AMT*1000 <= FN_GET_TOTAL_TAX_AMT(#{empNo}, #{ptNo}, #{prYr}, #{prMth})
+		                                                AND END_AMT*1000 > FN_GET_TOTAL_TAX_AMT(#{empNo}, #{ptNo}, #{prYr}, #{prMth})
+		                                            )
+		              ELSE B.PD_AMT                                      
+		        END PD_AMT
+		        , B.PD_LAW_YN
+		FROM  PT_MAKE A, PAY_DED B
+		WHERE A.PD_NO = B.PD_NO                         
+		AND     PT_NO = #{ptNo} AND PD_TYPE='B0402' AND PD_LAW_YN = 'B0102'
+		ORDER BY A.PD_NO
+		]]>
+	</select>	
+	
+	<!-- 지급항목이력 추가 insert -->
+	<insert id="insertPayHistory" parameterType="SalaryCertVO">
+		INSERT INTO PD_HISTORY (PD_NO, SC_NO, PD_NM, PD_TYPE, PD_AMT, PD_TAX_YN)
+		VALUES( #{pdNo}
+			   ,(SELECT SC_NO FROM SALARY_CERT WHERE EMP_NO = #{empNo} AND PR_YR=#{prYr} AND PR_MTH=#{prMth} AND PT_NO=#{ptNo})
+			   ,#{pdNm}, 'B0401', #{pdAmt}
+			   ,(SELECT PD_TAX_YN FROM PAY_DED WHERE PD_NO = #{pdNo}) )
+	</insert>
+	
+	<!-- 기본급 계산 / 초과근무수당 - 연장, 야간, 휴일별 금액 각각 산출 -->
+	<select id="selectOverTimePay" parameterType="SalaryCertVO" resultType="SalaryCertVO">
+	
+        WITH T AS
+		        ( SELECT  E.EMP_NO
+			            , E.EMP_NM
+			            , SUM(WA_EXTIME) AS TOTAL_EXTIME 
+			            , SUM(WA_NIGHTIME) AS TOTAL_NIGHTIME
+			            , SUM(HDTIME) AS TOTAL_HDTIME 
+			            , FN_GET_BASIC(#{empNo}) PD_AMT 
+		        FROM EMP E 
+		        INNER JOIN WK_AP W ON (E.EMP_NO = W.WA_APER)
+		        INNER JOIN APBOX A ON (W.DFT_NO = A.DFT_NO) 
+		        WHERE EXTRACT(YEAR FROM W.WA_DATE)=#{prYr} AND EXTRACT(MONTH FROM W.WA_DATE)=#{prMth} AND W.WA_APER=#{empNo} AND A.APB_PRO = '승인'
+		        GROUP BY E.EMP_NO, E.EMP_NM
+		        ) 
+        SELECT   (SELECT EMP_NO FROM EMP WHERE EMP_NO = #{empNo}) as EMP_NO
+        		,(SELECT EMP_NM FROM EMP WHERE EMP_NO = #{empNo}) as EMP_NM
+                ,T.PD_AMT AS BASE_PAY
+                ,ROUND(T.PD_AMT/209) AS BASIC_HOUR_WAGE
+                ,(T.TOTAL_EXTIME + T.TOTAL_NIGHTIME + T.TOTAL_HDTIME) AS TOTAL_ADMIT_TIME
+                ,T.TOTAL_EXTIME
+                ,T.TOTAL_NIGHTIME
+                ,T.TOTAL_HDTIME
+                ,ROUND(ROUND(T.PD_AMT/209)*T.TOTAL_EXTIME*1.5) as OVERTIME_PAY 
+                ,ROUND(ROUND(T.PD_AMT/209)*T.TOTAL_NIGHTIME*1.5) as NIGHTIME_PAY 
+                ,ROUND(ROUND(T.PD_AMT/209)*T.TOTAL_HDTIME*1.5) as HDTIME_PAY
+                ,((ROUND(ROUND(T.PD_AMT/209)*T.TOTAL_EXTIME*1.5) + ROUND(ROUND(T.PD_AMT/209)*T.TOTAL_NIGHTIME*1.5) +  ROUND(ROUND(T.PD_AMT/209)*T.TOTAL_HDTIME*1.5))) AS TOTAL_EX_PAY 
+        FROM T
+	</select>
+	
+	<!-- (ptNo, prYr, prMth는 세션에서 값 받기), pdNm은 div에서 추출, empNo는 for문 돌면서 한개씩 뽑아오기)
+	버튼 클릭시 한개의 함수실행해서, 각각 ajax 실행하기. (기본급, 초과근무수당, 기타수당(항목별로)) 그러니까 메서드 다 각각각 실행. -->
+	<!-- 정산 지급항목 이력 - 기본급 insert -->
+	<insert id="insertBasePay" parameterType="SalaryCertVO">
+        MERGE INTO PD_HISTORY a
+		USING dual
+		   ON (a.PD_NO = 1 and SC_NO =  (SELECT SC_NO FROM SALARY_CERT WHERE EMP_NO=#{empNo} AND PT_NO=#{ptNo} AND PR_YR=#{prYr} AND PR_MTH=#{prMth}))
+		 WHEN MATCHED THEN
+		      UPDATE
+		         SET a.PD_AMT = ( SELECT SUM(C.BCNT_AMT)
+		            	   FROM EMP E INNER JOIN CNTHX C 
+		            	   ON C.EMP_NO = E.EMP_NO
+			               WHERE E.EMP_NO = #{empNo}
+			               AND C.BWCT_SDATE = (
+								                SELECT MAX(D.BWCT_SDATE)
+								                FROM CNTHX D
+								                WHERE D.EMP_NO = E.EMP_NO))
+		 WHEN NOT MATCHED THEN
+		    INSERT (PD_NO, SC_NO, PD_NM, PD_TYPE, PD_AMT, PD_TAX_YN)
+				VALUES( 1
+		       		   , (SELECT SC_NO FROM SALARY_CERT WHERE EMP_NO=#{empNo} AND PT_NO=#{ptNo} AND PR_YR=#{prYr} AND PR_MTH=#{prMth})
+				       , #{pdNm}
+				       , 'B0401'
+		       		   , FN_GET_BCNT_AMT(#{empNo})
+		       		   , (SELECT PD_TAX_YN FROM PAY_DED WHERE PD_NM = #{pdNm}) 
+		        )
+	</insert>
+	
+	<!-- 정산 지급항목 이력 - 초과근무수당 insert -->
+	<insert id="insertOvertimePay" parameterType="SalaryCertVO">
+		MERGE INTO PD_HISTORY a
+		USING dual
+           ON (a.PD_NO = 3 and SC_NO =  (SELECT SC_NO FROM SALARY_CERT WHERE EMP_NO=#{empNo} AND PT_NO=#{ptNo} AND PR_YR=#{prYr} AND PR_MTH=#{prMth}))
+         WHEN MATCHED THEN
+          UPDATE
+             SET a.PD_AMT = ( FN_GET_OP_BCNT_AMT(#{empNo}, #{prYr}, #{prMth}) )
+	     WHEN NOT MATCHED THEN
+	        INSERT (PD_NO, SC_NO, PD_NM, PD_TYPE, PD_AMT, PD_TAX_YN)
+	                VALUES( 3
+	                       , (SELECT SC_NO FROM SALARY_CERT WHERE EMP_NO=#{empNo} AND PT_NO=#{ptNo} AND PR_YR=#{prYr} AND PR_MTH=#{prMth})
+	                       , #{pdNm}
+	                       , 'B0401'
+	                       , FN_GET_OP_BCNT_AMT(#{empNo}, #{prYr}, #{prMth})
+	                       , (SELECT PD_TAX_YN FROM PAY_DED WHERE PD_NM = #{pdNm}) 
+	        )
+	</insert>
+	
+	<!-- 정산 지급항목 이력 - 기타수당 항목별로 insert -->
+	<insert id="insertOtherPay" parameterType="SalaryCertVO">
+		MERGE INTO PD_HISTORY A
+		USING DUAL ON(a.PD_NO = (SELECT PD_NO FROM PAY_DED WHERE PD_NM = #{pdNm}) and SC_NO = (SELECT SC_NO FROM SALARY_CERT WHERE EMP_NO=#{empNo} AND PT_NO=#{ptNo} AND PR_YR=#{prYr} AND PR_MTH=#{prMth}))
+		WHEN MATCHED THEN
+		    UPDATE
+		        SET   A.PD_AMT = #{pdAmt}
+		 WHEN NOT MATCHED THEN
+		    INSERT (PD_NO, SC_NO, PD_NM, PD_TYPE, PD_AMT, PD_TAX_YN)
+				VALUES( (SELECT PD_NO FROM PAY_DED WHERE PD_NM = #{pdNm})
+				       , (SELECT SC_NO FROM SALARY_CERT WHERE EMP_NO=#{empNo} AND PT_NO=#{ptNo} AND PR_YR=#{prYr} AND PR_MTH=#{prMth})
+				       , #{pdNm}
+				       , 'B0401'
+				       , #{pdAmt}
+				       , (SELECT PD_TAX_YN FROM PAY_DED WHERE PD_NM = #{pdNm})
+				)
+	</insert>
+	
+	<!-- 정산 공제항목 이력 - 공제항목 insert (법정공제항목, 기타공제항목 쿼리 동일) -->
+	<insert id="insertWageDed" parameterType="SalaryCertVO">
+		MERGE INTO PD_HISTORY A
+		USING DUAL ON(a.PD_NO = (SELECT PD_NO FROM PAY_DED WHERE PD_NM = #{pdNm}) and SC_NO = (SELECT SC_NO FROM SALARY_CERT WHERE EMP_NO=#{empNo} AND PT_NO=#{ptNo} AND PR_YR=#{prYr} AND PR_MTH=#{prMth}))
+		WHEN MATCHED THEN
+		    UPDATE
+		        SET   A.PD_AMT = #{pdAmt}
+		 WHEN NOT MATCHED THEN
+		    INSERT (PD_NO, SC_NO, PD_NM, PD_TYPE, PD_AMT, PD_TAX_YN)
+				VALUES( (SELECT PD_NO FROM PAY_DED WHERE PD_NM = #{pdNm})
+				       , (SELECT SC_NO FROM SALARY_CERT WHERE EMP_NO=#{empNo} AND PT_NO=#{ptNo} AND PR_YR=#{prYr} AND PR_MTH=#{prMth})
+				       , #{pdNm}
+				       , 'B0402'
+				       , #{pdAmt}
+				       , (SELECT PD_TAX_YN FROM PAY_DED WHERE PD_NM = #{pdNm})
+				)
+	</insert>
+	
+	<!-- 정산이력 지급항목 조회 (파라미터 : empNo, ptNo, prYr, prMth)-->
+	<select id="selectPayHistory" parameterType="SalaryCertVO" resultType="PdHistoryVO">
+		SELECT 	 PD_NO
+				,SC_NO
+				,PD_NM
+				,PD_TYPE
+				,PD_AMT
+				,PD_TAX_YN 
+		FROM PD_HISTORY
+		WHERE SC_NO=(SELECT SC_NO FROM SALARY_CERT WHERE EMP_NO=#{empNo} AND PT_NO=#{ptNo} AND PR_YR=#{prYr} AND PR_MTH=#{prMth}) 
+			AND PD_TYPE = 'B0401'
+		ORDER BY PD_NO
+	</select>
+	
+	<!-- 정산이력 공제항목 조회 (파라미터 : empNo, ptNo, prYr, prMth) -->
+	<select id="selectDedHistory" parameterType="SalaryCertVO" resultType="PdHistoryVO">
+		SELECT PD_NO
+			 , SC_NO
+			 , PD_NM
+			 , PD_TYPE
+			 , PD_AMT
+			 , PD_TAX_YN 
+		FROM PD_HISTORY
+		WHERE SC_NO=(SELECT SC_NO FROM SALARY_CERT WHERE EMP_NO=#{empNo} AND PT_NO=#{ptNo} AND PR_YR=#{prYr} AND PR_MTH=#{prMth}) 
+			AND PD_TYPE = 'B0402'
+		ORDER BY PD_NO
+	</select>
+
+	<!-- 정산이력 지급항목 갯수 조회 (파라미터 : empNo, ptNo, prYr, prMth) -->
+	<select id="selectPayCount" parameterType="SalaryCertVO" resultType="int">
+		SELECT COUNT(*) 
+		FROM PD_HISTORY 
+		WHERE SC_NO=(SELECT SC_NO FROM SALARY_CERT WHERE EMP_NO=#{empNo} AND PT_NO=#{ptNo} AND PR_YR=#{prYr} AND PR_MTH=#{prMth}) 
+			AND PD_TYPE = 'B0401'
+	</select>
+	
+	<!-- 정산이력 공제항목 갯수 조회 (파라미터 : empNo, ptNo, prYr, prMth) -->
+	<select id="selectDedCount" parameterType="SalaryCertVO" resultType="int">
+		SELECT COUNT(*) 
+		FROM PD_HISTORY 
+		WHERE SC_NO=(SELECT SC_NO FROM SALARY_CERT WHERE EMP_NO=#{empNo} AND PT_NO=#{ptNo} AND PR_YR=#{prYr} AND PR_MTH=#{prMth}) 
+			AND PD_TYPE = 'B0402'
+	</select>
+	
+	<!-- 정산 지급 합 (파라미터 : empNo, ptNo, prYr, prMth) -->
+	<select id="selectPaySum" parameterType="SalaryCertVO" resultType="int">
+		SELECT SUM(PD_AMT) 
+		FROM PD_HISTORY
+        WHERE SC_NO=(SELECT SC_NO FROM SALARY_CERT WHERE EMP_NO=#{empNo} AND PT_NO=#{ptNo} AND PR_YR=#{prYr} AND PR_MTH=#{prMth}) 
+        	AND PD_TYPE='B0401'
+	</select>
+	
+	<!-- 정산 공제 합 (파라미터 : empNo, ptNo, prYr, prMth) -->
+	<select id="selectDedSum" parameterType="SalaryCertVO" resultType="int">
+		SELECT SUM(PD_AMT) 
+		FROM PD_HISTORY
+        WHERE SC_NO=(SELECT SC_NO FROM SALARY_CERT WHERE EMP_NO=#{empNo} AND PT_NO=#{ptNo} AND PR_YR=#{prYr} AND PR_MTH=#{prMth})
+        	AND PD_TYPE='B0402'
+	</select>
+   
+	<!--정산 지급총액, 공제총액, 실지급액 UPDATE (파라미터 : pytlAmt, ddtlAmt, netAmt, empNo, ptNo, prYr, prMth) (7개) -->        
+	<update id="updateFinalAmt" parameterType="SalaryCertVO">
+		UPDATE SALARY_CERT
+        SET PYTL_AMT=#{pytlAmt}, DDTL_AMT=#{ddtlAmt}, NET_AMT=#{netAmt}, PR_FDATE=SYSDATE, FIN_YN='B0101'
+        WHERE SC_NO=(SELECT SC_NO FROM SALARY_CERT WHERE EMP_NO = #{empNo} AND PT_NO=#{ptNo} AND PR_YR=#{prYr} AND PR_MTH=#{prMth})
+	</update>   
+	
+	<!-- 급여정산 완료 페이지 (급여대장 요약) (wageRes) (파라미터 : prYr, prMth, ptNo) -->
+	<select id="selectSCSummary" parameterType="SalaryCertVO" resultType="SalaryCertVO">
+		SELECT
+         	   SUM(PYTL_AMT) as SUM_PYTL_AMT
+       	   	 , SUM(DDTL_AMT) as SUM_DDTL_AMT
+        	 , SUM(NET_AMT) as SUM_NET_AMT
+      	     , EXTRACT(MONTH FROM PR_FDATE) AS PR_FDATE_MTH
+       	     , EXTRACT(DAY FROM PR_FDATE) AS PR_FDATE_DAY
+       	     , EXTRACT(MONTH FROM PR_PDATE) AS PR_PDATE_MTH
+       	     , EXTRACT(DAY FROM PR_PDATE) AS PR_PDATE_DAY
+        	 , TO_CHAR(PR_PDATE, 'DAY') AS PR_PDATE_WEEKDAY
+		FROM SALARY_CERT 
+		WHERE PR_YR=#{prYr} AND PR_MTH=#{prMth} AND PT_NO=#{ptNo}
+		GROUP BY PR_YR, PR_MTH, PT_NO, PR_FDATE, PR_PDATE
+	</select>
+	
+	<!-- 지난정산내역 리스트 출력 (pastPayroll) parameter : prYr(키워드로 받아야 함, 기본값 : select한 가장최신연도) -->
+	<select id="selectPastPayroll" parameterType="SalaryCertVO" resultType="SalaryCertVO">
+		SELECT PT_NO
+			 , PR_YR
+			 , PR_MTH
+			 , SUM(PYTL_AMT) as SUM_PYTL_AMT 
+			 , SUM(DDTL_AMT) as SUM_DDTL_AMT
+			 , SUM(NET_AMT) as SUM_NET_AMT
+			 , PR_STL_NM
+			 , TO_CHAR(PR_PDATE, 'YYYY-MM-DD') as PR_PDATE
+		FROM SALARY_CERT
+		WHERE PR_YR = #{prYr}
+		GROUP BY PT_NO, PR_YR, PR_MTH, PR_STL_NM, PR_PDATE
+		ORDER BY PR_YR, PR_MTH DESC
+	</select>
+	
+	<!-- 정산내역 중 가장 최근의 연도 추출 (pastPayroll) //null일떄 0으로 치환-->
+	<select id="selectLatestPrYr" resultType="int">
+		SELECT NVL(
+        			(SELECT PR_YR
+           			FROM (
+                 			SELECT DISTINCT PR_YR
+                 			FROM SALARY_CERT
+                 			ORDER BY PR_YR DESC
+                	)
+           			WHERE ROWNUM = 1
+          	   ), 0) AS PR_YR
+		FROM DUAL
+	</select>
+	
+	<!-- 정산내역 삭제 (pastPayroll) (파라미터 : ptNo, prYr, prMth) //같은 귀속연월의 급여정산이면 SC 여러줄 삭제 가능 -->
+	<delete id="deletePayroll" parameterType="SalaryCertVO">
+		DELETE FROM SALARY_CERT
+		WHERE PT_NO = #{ptNo} AND PR_YR = #{prYr} AND PR_MTH = #{prMth}	
+	</delete>
+	
+	<!-- 엑셀 다운로드 자료 리스트 (파라미터 : ptNo, prYr, prMth) -->
+	<select id="selectExcelDownList" parameterType="SalaryCertVO" resultType="SalaryCertVO">
+		SELECT S.EMP_NO
+			 , E.EMP_NM
+			 , E.EMP_MAIL
+			 , TO_CHAR(E.ENT_DATE, 'YYYY-MM-DD') AS ENT_DATE
+        	 , TO_CHAR(E.OUT_DATE, 'YYYY-MM-DD') AS OUT_DATE
+        	 , D.DNM
+        	 , (SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'position' AND CM_CODE = DTCODE) AS DTCODE_NM
+        	 , (SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'spot' AND CM_CODE = PTN_CODE) AS PTN_CODE_NM
+        	 , (SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'job' AND CM_CODE = JCODE) AS JCODE_NM
+        	 , (SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'hobong' AND CM_CODE = GRD_CODE) AS GRD_CODE_NM
+        	 , (SELECT CM_NM FROM CMCODE WHERE CM_GROUP = 'tenure' AND CM_CODE = ST_CLF_CD) AS ST_CLF_CD_NM
+        	 , FN_GET_BASIC(S.EMP_NO) AS BASE_PAY
+        	 , S.PYTL_AMT
+        	 , S.DDTL_AMT
+        	 , S.NET_AMT
+        	 , TO_CHAR(S.PR_PDATE, 'YYYY-MM-DD') AS PR_PDATE
+		FROM SALARY_CERT S 
+		INNER JOIN EMP E ON S.EMP_NO = E.EMP_NO
+		LEFT OUTER JOIN DEPT D ON E.DCODE = D.DCODE
+		WHERE PT_NO=#{ptNo} AND PR_YR=#{prYr} AND PR_MTH=#{prMth}
+	</select>
+</mapper>

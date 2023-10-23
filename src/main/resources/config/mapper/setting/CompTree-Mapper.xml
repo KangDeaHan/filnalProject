@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.setting.mapper.CompTreeMapper">
+
+<insert id="deptAdd" parameterType="Map">
+	INSERT INTO DEPT
+		(DCODE, UPR_DCODE, DNM)
+	VALUES
+		(#{id},#{parent},#{text})
+</insert>
+
+<update id="deptUp" parameterType="Map">
+	UPDATE DEPT 
+	SET DNM = #{text}
+	WHERE DCODE = #{id}		
+
+</update>
+
+<delete id="deptDel" parameterType="int">
+	DELETE FROM DEPT
+	WHERE DCODE = #{id}
+</delete>
+
+<select id="checkEmp" parameterType="int" resultType="int">
+	SELECT 
+		COUNT(EMP_NO)
+	FROM EMP
+	WHERE DCODE = #{sel}
+</select>
+
+<select id="selectPtn" resultType="CmCodeVO">
+	SELECT
+		CM_CODE 
+		, PARENT_CD
+		, CM_NM
+		, CM_ABST
+		, CM_USE_YN
+		, CM_OTPT_SN
+		, CM_REG_DATE
+		, CM_WRI_DATE
+		, CM_GROUP
+	FROM CMCODE
+	WHERE PARENT_CD = 'A01'
+	ORDER BY CM_CODE
+</select>
+
+<select id="checkPtnEmp" parameterType="String" resultType="int">
+	SELECT
+		COUNT(EMP_NO)
+	FROM EMP
+	WHERE PTN_CODE = #{sel}
+</select>
+
+<insert id="ptnAdd" parameterType="CmCodeVO">
+	INSERT INTO CMCODE
+		(CM_CODE
+		, PARENT_CD
+		, CM_NM
+		, CM_USE_YN
+		, CM_OTPT_SN
+		, CM_REG_DATE
+		, CM_GROUP)
+	VALUES
+		(#{cmCode}
+		, #{parentCd}
+		, #{cmNm}
+		, 'Y'
+		, (SELECT NVL(MAX(CM_OTPT_SN),0)+1 FROM CMCODE WHERE PARENT_CD = 'A01')
+		, SYSDATE
+		, #{cmGroup})
+</insert>
+
+<update id="ptnUp" parameterType="CmCodeVO">
+	UPDATE CMCODE
+	SET CM_NM = #{cmNm}
+		, CM_WRI_DATE = SYSDATE
+	WHERE CM_CODE = #{cmCode}
+</update>
+
+<delete id="ptnDel" parameterType="CmCodeVO">
+	DELETE FROM CMCODE
+	WHERE CM_CODE = #{cmCode}
+</delete>
+
+<select id="selectPosition" resultType="CmCodeVO">
+	SELECT 
+		CM_CODE
+		, PARENT_CD
+		, CM_NM
+		, CM_ABST
+		, CM_USE_YN
+		, CM_OTPT_SN
+		, CM_REG_DATE
+		, CM_WRI_DATE
+		, CM_GROUP
+	FROM CMCODE
+	WHERE PARENT_CD = 'A02'
+	ORDER BY CM_CODE
+</select>
+
+<select id="checkPositionEmp" parameterType="String">
+	SELECT
+		COUNT(EMP_NO)
+	FROM EMP
+	WHERE DTCODE = #{sel}
+</select>
+
+<insert id="positionAdd" parameterType="CmCodeVO">
+	INSERT INTO CMCODE
+		(CM_CODE
+		, PARENT_CD
+		, CM_NM
+		, CM_USE_YN
+		, CM_OTPT_SN
+		, CM_REG_DATE
+		, CM_GROUP)
+	VALUES
+		(#{cmCode}
+		, #{parentCd}
+		, #{cmNm}
+		, 'Y'
+		, (SELECT NVL(MAX(CM_OTPT_SN),0)+1 FROM CMCODE WHERE PARENT_CD = 'A02')
+		, SYSDATE
+		, #{cmGroup})
+</insert>
+
+<update id="positionUp" parameterType="CmCodeVO">
+	UPDATE CMCODE
+	SET CM_NM = #{cmNm}
+		, CM_WRI_DATE = SYSDATE
+	WHERE CM_CODE = #{cmCode}
+</update>
+
+<delete id="positionDel" parameterType="CmCodeVO">
+	DELETE FROM CMCODE
+	WHERE CM_CODE = #{cmCode}
+</delete>
+
+<select id="selectJob" resultType="CmCodeVO">
+	SELECT 
+		CM_CODE
+		, PARENT_CD
+		, CM_NM
+		, CM_ABST
+		, CM_USE_YN
+		, CM_OTPT_SN
+		, CM_REG_DATE
+		, CM_WRI_DATE
+		, CM_GROUP
+	FROM CMCODE
+	WHERE PARENT_CD = 'A03'
+	ORDER BY CM_CODE
+</select>
+
+<select id="checkJobEmp" parameterType="String">
+	SELECT
+		COUNT(EMP_NO)
+	FROM EMP
+	WHERE JCODE = #{sel}
+</select>
+
+<insert id="jobAdd" parameterType="CmCodeVO">
+	INSERT INTO CMCODE
+		(CM_CODE
+		, PARENT_CD
+		, CM_NM
+		, CM_USE_YN
+		, CM_OTPT_SN
+		, CM_REG_DATE
+		, CM_GROUP)
+	VALUES
+		(#{cmCode}
+		, #{parentCd}
+		, #{cmNm}
+		, 'Y'
+		, (SELECT NVL(MAX(CM_OTPT_SN),0)+1 FROM CMCODE WHERE PARENT_CD = 'A03')
+		, SYSDATE
+		, #{cmGroup})
+</insert>
+
+<update id="jobUp" parameterType="CmCodeVO">
+	UPDATE CMCODE
+	SET CM_NM = #{cmNm}
+		, CM_WRI_DATE = SYSDATE
+	WHERE CM_CODE = #{cmCode}
+</update>
+
+<delete id="jobDel" parameterType="CmCodeVO">
+	DELETE FROM CMCODE
+	WHERE CM_CODE = #{cmCode}
+</delete>
+	
+<select id="selectGrd" resultType="CmCodeVO">
+	SELECT 
+		CM_CODE
+		, PARENT_CD
+		, CM_NM
+		, CM_ABST
+		, CM_USE_YN
+		, CM_OTPT_SN
+		, CM_REG_DATE
+		, CM_WRI_DATE
+		, CM_GROUP
+	FROM CMCODE
+	WHERE PARENT_CD = 'A05'
+	ORDER BY CM_CODE
+</select>
+
+<select id="checkGrdEmp" parameterType="String">
+	SELECT
+		COUNT(EMP_NO)
+	FROM EMP
+	WHERE GRD_CODE = #{sel}
+</select>
+
+<insert id="grdAdd" parameterType="CmCodeVO">
+	INSERT INTO CMCODE
+		(CM_CODE
+		, PARENT_CD
+		, CM_NM
+		, CM_USE_YN
+		, CM_OTPT_SN
+		, CM_REG_DATE
+		, CM_GROUP)
+	VALUES
+		(#{cmCode}
+		, #{parentCd}
+		, #{cmNm}
+		, 'Y'
+		, (SELECT NVL(MAX(CM_OTPT_SN),0)+1 FROM CMCODE WHERE PARENT_CD = 'A05')
+		, SYSDATE
+		, #{cmGroup})
+</insert>
+
+<update id="grdUp" parameterType="CmCodeVO">
+	UPDATE CMCODE
+	SET CM_NM = #{cmNm}
+		, CM_WRI_DATE = SYSDATE
+	WHERE CM_CODE = #{cmCode}
+</update>
+
+<delete id="grdDel" parameterType="CmCodeVO">
+	DELETE FROM CMCODE
+	WHERE CM_CODE = #{cmCode}
+</delete>
+	
+</mapper>

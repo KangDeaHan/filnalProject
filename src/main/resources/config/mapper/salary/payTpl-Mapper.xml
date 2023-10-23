@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.salary.mapper.PayTplMapper">
+
+	<!-- 템플릿 목록 (전체 검색) -->
+	<select id="selectTplList" resultType="PayTplVO">
+		SELECT PT_NO, PT_NM, PT_EPN, PT_CDATE, PT_YN, PT_BMK_YN
+		FROM PAYTPL
+		ORDER BY PT_CDATE ASC	
+	</select>
+	
+	<!-- 한 건 검색 -->
+	<select id="selectTpl" parameterType="int" resultType="PayTplVO">
+		SELECT  PT_NO, PT_NM, PT_EPN, PT_CDATE, PT_YN, PT_BMK_YN
+		FROM   PAYTPL
+		WHERE PT_NO = #{ptNo}
+	</select>
+	
+	<!-- 템플릿 추가 -->
+	<insert id="insertTpl" parameterType="PayTplVO">
+		<selectKey resultType="int" order="BEFORE" keyProperty="ptNo">
+			SELECT NVL(MAX(PT_NO),0) + 1 FROM PAYTPL
+		</selectKey>
+		INSERT INTO PAYTPL(PT_NO, PT_NM, PT_EPN, PT_CDATE)
+		VALUES(#{ptNo},#{ptNm},#{ptEpn},SYSDATE)
+	</insert>
+	
+	<!-- 템플릿 변경 -->
+	<update id="updateTpl" parameterType="PayTplVO">
+		UPDATE PAYTPL 
+		SET PT_NM=#{ptNm}, PT_EPN=#{ptEpn}, PT_CDATE=SYSDATE
+		WHERE PT_NO=#{ptNo}
+	</update>
+	
+	<!-- 템플릿 삭제 -->
+	<delete id="deleteTpl" parameterType="PayTplVO">
+		DELETE FROM PAYTPL 
+		WHERE PT_NO=#{ptNo}
+	</delete>
+	
+	<!-- 템플릿 북마크 상태 변경 -->
+	<update id="updateBmkStatus" parameterType="PayTplVO">
+		UPDATE PAYTPL 
+		SET PT_BMK_YN=#{ptBmkYn}
+		WHERE PT_NO=#{ptNo}
+	</update>
+	
+	<!-- 급여정산 홈 - 북마크여부코드가 'B0101'인 것만 전체 출력하기 -->
+	<select id="selectBmkOn" resultType="PayTplVO">
+		SELECT PT_NO, PT_NM, PT_EPN, PT_CDATE, PT_YN, PT_BMK_YN
+		FROM PAYTPL WHERE PT_BMK_YN='B0101'	
+		ORDER BY PT_CDATE ASC
+	</select>
+ 
+</mapper>
+
+

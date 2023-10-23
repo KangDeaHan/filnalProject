@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.vacation.mapper.AdminVacationListMapper">
+
+
+<!-- 관리자 페이지 2 휴가 조회 -->
+<select id="vacationSelectList" resultType="VacApplyVO">
+		SELECT VAAP_CODE, VAAP_EMP, 
+	       TO_CHAR(VAAP_DATE, 'yyyy-MM-dd') VAAP_DATE , VAAP_DAYS, (select CM_NM from CMCODE where CM_CODE= VAAP_APST_CODE) VAAP_APST_CODE,
+	       TO_CHAR(VAAP_START, 'yyyy-MM-dd') VAAP_START, TO_CHAR(VAAP_END, 'yyyy-MM-dd') VAAP_END, VAAP_TYPE, EMP_NO, 
+	       VAC_TYPE_NAME, VAC_TYPE_USE_DATE
+		FROM vac_APPLY
+</select>
+
+<!-- 관리자 페이지 2 휴직 조회 -->
+<select id="bkSelectList" resultType="BkApplyVO">
+		SELECT
+		    bk_apply.EMP_NO,
+		    EMP.EMP_NM,
+		    (SELECT bk_nm FROM bk_kind WHERE bk_code = bk_apply.Bk_code) AS BK_CODE,
+		    TO_CHAR(BK_SDATE, 'yyyy-mm-dd') AS BK_SDATE,
+		    TO_CHAR(BK_EDATE, 'yyyy-mm-dd') AS BK_EDATE,
+		    (SELECT CM_NM FROM CMCODE WHERE CM_CODE = BK_APST_CODE) AS BK_APST_CODE,
+		    (SELECT CM_NM FROM CMCODE WHERE CM_CODE = BK_CERT_YN) AS BK_CERT_YN
+		FROM bk_apply
+		JOIN EMP ON bk_apply.EMP_NO = EMP.EMP_NO
+</select>
+
+<select id="rsSelectList" resultType="RsReqstVO">
+		select RS_REQST.EMP_NO,  EMP.EMP_NM, TO_CHAR(RS_DATE, 'yyyy-mm-dd') AS RS_DATE,
+		(SELECT CM_NM FROM CMCODE WHERE CM_CODE = RS_APST_CODE) AS RS_APST_CODE
+		from RS_REQST
+		JOIN EMP ON RS_REQST.EMP_NO = EMP.EMP_NO
+</select>
+
+<!-- 구성원 리스트 조회  연차 부여  -->
+<select id="empList" resultType="EmpVO">
+		select EMP_NO, EMP_NM,
+			(select cm_nm from CMCODE where cm_code =JCODE)JCODE,
+			(select cm_nm from CMCODE where cm_code =DTCODE)DTCODE, 
+			(select cm_nm from CMCODE where cm_code =PTN_CODE)PTN_CODE, 
+			(select cm_nm from CMCODE where cm_code =GRD_CODE)GRD_CODE, 
+			(select cm_nm from CMCODE where cm_code =ST_CLF_CD)ST_CLF_CD
+		from EMP
+</select>
+<!-- 연차 부여 -->
+<insert id="giveDaysInsert" parameterType="VacHoldVO">
+		insert into vac_hold(VH_CNG_NO, EMP_NO, VAC_TYPE_NO, VH_GIVE_DATE, VH_GIVE_DAYS) 
+		values(vac_seq.nextval, #{empNo},1 ,sysdate, #{vhGiveDays})
+</insert>
+<!-- 부여연차 업데이트 -->
+<update id="giveDaysUpdate" parameterType="VacHoldVO">
+		UPDATE vac_hold
+		SET VH_GIVE_DAYS = #{vhGiveDays}
+		WHERE VH_CNG_NO = (
+			SELECT MAX(VH_CNG_NO)
+			FROM vac_hold
+			WHERE EMP_NO = #{empNo}
+		)
+</update>
+</mapper>
+
+
